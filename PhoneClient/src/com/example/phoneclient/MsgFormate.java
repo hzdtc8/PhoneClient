@@ -1,5 +1,7 @@
 package com.example.phoneclient;
 
+import java.text.MessageFormat;
+
 public class MsgFormate {
 	
 	public enum MsgType
@@ -41,9 +43,22 @@ public class MsgFormate {
 		messageType=msgType;
 	}
 	
-	public static MsgFormate newSetup()
+	public static MsgFormate newSetup(String tagID,String caption,String content)
 	{
+		MsgFormate msgFormate = new MsgFormate();
+		msgFormate.messageText = MessageFormat.format(setup, tagID,caption,content);
+		msgFormate.messageType= MsgType.setup;
 		
+		return msgFormate;
+	}
+	
+	public static MsgFormate newCrossDevice(String tagID,String caption,String content)
+	{
+		MsgFormate msgFormate = new MsgFormate();
+		msgFormate.messageText = MessageFormat.format(crossDevice,tagID,caption,content );
+		msgFormate.messageType = MsgType.crossDevice;
+		
+		return msgFormate;
 	}
 	
 	
