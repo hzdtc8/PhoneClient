@@ -61,6 +61,27 @@ public class MsgFormate {
 		return msgFormate;
 	}
 	
+	public static MsgFormate newReturnValue(String tagID,String caption,String content)
+	{
+		MsgFormate msgFormate = new MsgFormate();
+		msgFormate.messageText = MessageFormat.format(returnValue,tagID,caption,content );
+		msgFormate.messageType = MsgType.returnValue;
+		
+		return msgFormate;
+	}
+	
+	public static MsgFormate newReturnGesture(String tagID,String caption,String content)
+	{
+		MsgFormate msgFormate = new MsgFormate();
+		msgFormate.messageText = MessageFormat.format(returnGesture,tagID,caption,content );
+		msgFormate.messageType = MsgType.returnGesture;
+		
+		return msgFormate;
+	}
+	
+	
+	
+	
 	
 	
 
