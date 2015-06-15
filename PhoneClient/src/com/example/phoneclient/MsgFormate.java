@@ -25,18 +25,22 @@ public class MsgFormate {
 	{
 		return messageText;
 	}
+	
 	public void setMessageText(String text)
 	{
 		messageText=text;
 	}
+	
 	public MsgType getMessageType()
 	{
 		return messageType;
 	}
+	
 	public void setMessageType(MsgType msgType)
 	{
 		messageType=msgType;
 	}
+	
 	
 	
 
