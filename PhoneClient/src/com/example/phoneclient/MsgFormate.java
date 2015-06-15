@@ -12,7 +12,7 @@ public class MsgFormate {
 	
 	}
 	
-	private static String setupd="setup;{0};{1};{2}/>"; //setup;tagID;caption;content/>
+	private static String setup="setup;{0};{1};{2}/>"; //setup;tagID;caption;content/>
 	private static String crossDevice="crossDevice;{0};{1};{2}/>";//crossDevice;tagID;caption;content/>
 	private static String objectClick="objectClick;{0};{1};{2}/>";//objectClick;tagID;caption;content/>
 	private static String returnValue="returnValue;{0};{1};{2}/>";//returnValue;tagID;caption;content/>
@@ -39,6 +39,11 @@ public class MsgFormate {
 	public void setMessageType(MsgType msgType)
 	{
 		messageType=msgType;
+	}
+	
+	public static MsgFormate newSetup()
+	{
+		
 	}
 	
 	
