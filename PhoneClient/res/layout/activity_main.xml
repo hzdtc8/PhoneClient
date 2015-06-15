@@ -1,0 +1,107 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.phoneclient.MainActivity"
+    tools:ignore="MergeRootFrame" >
+
+    <LinearLayout
+        android:id="@+id/MainLinear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+<com.example.phoneclient.BitmapView
+    android:id="@+id/Image_test"
+    android:layout_width="496dp"
+    android:layout_height="fill_parent" >
+</com.example.phoneclient.BitmapView>
+
+        <LinearLayout 
+            android:id="@+id/MainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/Share_MOde"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Connect" />
+
+            <Button
+                android:id="@+id/private_Mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cross Device" />
+
+            <Button
+                android:id="@+id/Setup_Mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Setup" />
+
+            <EditText
+                android:id="@+id/tag_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="enter ID" >
+
+                <requestFocus />
+            </EditText>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/GestureInterface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:id="@+id/textViewLayout"
+            android:layout_width="297dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.93"
+                android:orientation="vertical" >
+
+                <EditText
+                    android:id="@+id/editText1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter your Username"
+                    android:ems="10" />
+
+                <EditText
+                    android:id="@+id/editText2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+                <Button
+                    android:id="@+id/button1"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Login" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.michaelmarner.gestures.drawingtest
+            android:id="@+id/drawingtest1"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent" />
+
+    </LinearLayout>
+
+</FrameLayout>
+
