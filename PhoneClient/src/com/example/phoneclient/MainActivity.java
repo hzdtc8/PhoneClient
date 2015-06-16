@@ -194,9 +194,9 @@ public class MainActivity extends Activity implements GestureListener  {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			String command = tagID.getText().toString()+" "+"setup";
-			System.out.println("Comand="+command);//debug the TagID
-			byte[] arrayByte = command.getBytes();// convert the TagID into array byte
+			MsgFormate command = MsgFormate.newSetup(tagID.getText().toString(), "Setup", "");
+			System.out.println("Comand="+command.getMessageText());//debug the TagID
+			byte[] arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
 			
 			try {
 				outputStream.write(arrayByte);
