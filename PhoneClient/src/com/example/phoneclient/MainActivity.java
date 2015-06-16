@@ -292,7 +292,6 @@ privateButton.setOnClickListener(new View.OnClickListener() {
 		
 	//new Connection().execute();// connect to command socket
 	tSpeech.speak("You are at the cross device mode", TextToSpeech.QUEUE_FLUSH, null);
-	tSpeech.speak("You are at the cross deviceddd mode", TextToSpeech.QUEUE_FLUSH, null);
 	vibrator.vibrate(500);
 	String command = "crossDevice";
 	System.out.println("Comand="+command);
