@@ -78,6 +78,14 @@ public class MsgFormate {
 		
 		return msgFormate;
 	}
+	public static MsgFormate newObjectClick(String tagID,String caption,String content)
+	{
+		MsgFormate msgFormate = new MsgFormate();
+		msgFormate.messageText = MessageFormat.format(objectClick,tagID,caption,content );
+		msgFormate.messageType = MsgType.objectClick;
+		
+		return msgFormate;
+	}
 	
 	
 	

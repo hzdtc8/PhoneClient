@@ -241,7 +241,7 @@ bitmapView.setOnTouchListener(new View.OnTouchListener() {
 		if (event.getAction()== event.ACTION_DOWN)
 		{
 		System.out.println("In the X= "+ event.getX());
-		MsgFormate msg = MsgFormate.newObjectClick(tagID.getText().toString(), "objectClick", Float.toString(event.getX())+" "+Float.toString(event.getY())
+		MsgFormate msg = MsgFormate.newObjectClick(tagID.getText().toString(), "objectClick", Float.toString(event.getX())+" "+Float.toString(event.getY()));
 
 		bytes=msg.getMessageText().getBytes();
 
