@@ -241,8 +241,9 @@ bitmapView.setOnTouchListener(new View.OnTouchListener() {
 		if (event.getAction()== event.ACTION_DOWN)
 		{
 		System.out.println("In the X= "+ event.getX());
-		String coordinate =  "objectClicked"+" "+ tagID.getText().toString()+" "+Float.toString(event.getX())+" "+Float.toString(event.getY());
-		bytes=coordinate.getBytes();
+		MsgFormate msg = MsgFormate.newObjectClick(tagID.getText().toString(), "objectClick", Float.toString(event.getX())+" "+Float.toString(event.getY())
+
+		bytes=msg.getMessageText().getBytes();
 
 		//vibrator.vibrate(1000);
 
