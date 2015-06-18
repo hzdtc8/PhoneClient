@@ -3,7 +3,6 @@ package com.example.phoneclient;
 import java.io.DataOutputStream;
 
 import android.os.Vibrator;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -291,11 +290,13 @@ privateButton.setOnClickListener(new View.OnClickListener() {
 		// TODO Auto-generated method stub
 		
 	//new Connection().execute();// connect to command socket
+
+	//String command = "crossDevice";
+	MsgFormate msg = MsgFormate.newCrossDevice(tagID.getText().toString(), "You are at the cross device mode", "");
+	System.out.println("Comand="+msg.getMessageText());	
 	tSpeech.speak("You are at the cross device mode", TextToSpeech.QUEUE_FLUSH, null);
 	vibrator.vibrate(500);
-	String command = "crossDevice";
-	System.out.println("Comand="+command);
-	byte[] arrayByte = command.getBytes();
+	byte[] arrayByte = msg.getMessageText().getBytes();
 	
 	try {
 		outputStream.write(arrayByte);
