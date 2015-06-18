@@ -36,10 +36,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Build;
@@ -83,6 +85,8 @@ public class MainActivity extends Activity implements GestureListener  {
 	LinearLayout mAinLayout;
 	LinearLayout textViewLayout;
 	LinearLayout gestureInterfaceLayout;
+	LinearLayout dropdownlistLayout;
+	Spinner spinner;
 	
 	
 	public void sendmessage()
@@ -149,7 +153,11 @@ public class MainActivity extends Activity implements GestureListener  {
 		}
 		else if (inMsg[0].startsWith("dropdownList"))
 		{
-			
+			String[] pathStrings ={"My favorite","My address","My hobby"};
+			ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,pathStrings);
+			mAinLayout.setVisibility(View.GONE);
+			dropdownlistLayout.setVisibility(View.VISIBLE);
+			//onitemSelected
 		}
 
 		
@@ -179,6 +187,12 @@ public class MainActivity extends Activity implements GestureListener  {
 	
 	gestureInterfaceLayout=(LinearLayout)findViewById(R.id.GestureInterface);
 	gestureInterfaceLayout.setVisibility(View.GONE);
+	
+	dropdownlistLayout=(LinearLayout)findViewById(R.id.dropdownLayout);
+	dropdownlistLayout.setVisibility(View.GONE);
+	spinner=(Spinner)findViewById(R.id.mySpinner);
+	
+
 	
 	mAinLayout=(LinearLayout)findViewById(R.id.MainLinear);
 	//drawingtestLayout.setVisibility(View.GONE);
