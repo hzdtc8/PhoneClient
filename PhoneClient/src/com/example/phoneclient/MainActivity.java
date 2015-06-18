@@ -153,10 +153,24 @@ public class MainActivity extends Activity implements GestureListener  {
 		}
 		else if (inMsg[0].startsWith("dropdownList"))
 		{
-			String[] pathStrings ={"My favorite","My address","My hobby"};
-			ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,pathStrings);
-			mAinLayout.setVisibility(View.GONE);
-			dropdownlistLayout.setVisibility(View.VISIBLE);
+			
+
+runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					
+					mAinLayout.setVisibility(View.GONE);
+					dropdownlistLayout.setVisibility(View.VISIBLE);
+				    
+					
+				
+					 
+		    System.out.println("get the visbility: "+drawingtestLayout.getVisibility());
+				}
+			});
+			
 			//onitemSelected
 		}
 
@@ -191,7 +205,8 @@ public class MainActivity extends Activity implements GestureListener  {
 	dropdownlistLayout=(LinearLayout)findViewById(R.id.dropdownLayout);
 	dropdownlistLayout.setVisibility(View.GONE);
 	spinner=(Spinner)findViewById(R.id.mySpinner);
-	
+	String[] pathStrings ={"My favorite","My address","My hobby"};
+	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,pathStrings);
 
 	
 	mAinLayout=(LinearLayout)findViewById(R.id.MainLinear);
