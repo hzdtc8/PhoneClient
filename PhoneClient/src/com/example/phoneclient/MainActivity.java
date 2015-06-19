@@ -671,7 +671,7 @@ public void handleGesture(Gesture g) {
 @Override
 public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 	// TODO Auto-generated method stub
-	
+	byte[] arrayByte=null;
 	if(iCurrentSelect!=arg2)
 	{
 	TextView textView =(TextView)arg1;
@@ -679,10 +679,25 @@ public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
 	
 	Toast.makeText(this, "You Selected "+textView.getText(), Toast.LENGTH_SHORT).show();
 	
-	
-	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), textView.getText().toString());
+	if(textView.getText().toString().equals("My hobby"))
+	{
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "My hobby: play basketball, listen music, travel");
 	System.out.println("Comand="+command.getMessageText());//debug the TagID
-	byte[] arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	}
+	
+	else if(textView.getText().toString().equals("My address"))
+	{
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "My address: CS department,North Dakota State University,Fargo,ND");
+	System.out.println("Comand="+command.getMessageText());//debug the TagID
+	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	}
+	else if(textView.getText().toString().equals("My favorite"))
+	{
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "My favorite: Read books and chatting");
+	System.out.println("Comand="+command.getMessageText());//debug the TagID
+	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	}
 	
 	iCurrentSelect=arg2;
 	try {
