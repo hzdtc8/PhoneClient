@@ -10,7 +10,8 @@
         android:id="@+id/MainLinear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:visibility="gone" >
 
 <com.example.phoneclient.BitmapView
     android:id="@+id/Image_test"
@@ -53,11 +54,13 @@
         </LinearLayout>
 
     </LinearLayout>
+
  <LinearLayout
-        android:id="@+id/dropdownLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+     android:id="@+id/dropdownLayout"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:orientation="vertical"
+     android:visibility="gone" >
 
         <TextView
         android:id="@+id/txt"
@@ -83,10 +86,53 @@
         
         
     </LinearLayout>
+
+ <LinearLayout
+     android:id="@+id/ParagraphTranslation"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:orientation="horizontal" >
+
+     <TextView
+         android:id="@+id/paragraphView"
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         android:layout_weight="1.00"
+         android:text="TextView" />
+
+     <LinearLayout
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         android:layout_weight="0.14"
+         android:orientation="vertical" >
+
+         <Button
+             android:id="@+id/Chinese"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="Chinese" />
+
+         <Button
+             android:id="@+id/Spanish"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="Spanish" />
+
+         <Button
+             android:id="@+id/German"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="German" />
+
+     </LinearLayout>
+
+ </LinearLayout>
+
     <LinearLayout
         android:id="@+id/GestureInterface"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:visibility="gone" >
 
         <LinearLayout
             android:id="@+id/textViewLayout"
