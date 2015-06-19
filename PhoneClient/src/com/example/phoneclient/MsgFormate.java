@@ -10,7 +10,8 @@ public class MsgFormate {
 		crossDevice,
 		objectClick,
 		returnValue,
-		returnGesture
+		returnGesture,
+		itemSelect
 	
 	}
 	
@@ -19,6 +20,7 @@ public class MsgFormate {
 	private static String objectClick="objectClick;{0};{1};{2}";//objectClick;tagID;caption;content/>
 	private static String returnValue="returnValue;{0};{1};{2}";//returnValue;tagID;caption;content/>
 	private static String returnGesture="returnGesture;{0};{1};{2}";//returnGesture;tagID;caption;content/>
+	private static String itemSelect="itemSelect;{0};{1};{2}";//itemSelect;tagID;caption;content/>
 	
 	private String messageText;
 	private MsgType messageType;
@@ -85,6 +87,14 @@ public class MsgFormate {
 		msgFormate.messageType = MsgType.objectClick;
 		
 		return msgFormate;
+	}
+	public static MsgFormate newItemSelect(String tagID,String caption,String content)
+	{
+		MsgFormate msgFormate = new MsgFormate();
+		msgFormate.messageText = MessageFormat.format(itemSelect,tagID,caption,content );
+		msgFormate.messageType = MsgType.itemSelect;
+		return msgFormate;
+		
 	}
 	
 	
