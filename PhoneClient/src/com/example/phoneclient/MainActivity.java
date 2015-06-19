@@ -207,7 +207,7 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	dropdownlistLayout.setVisibility(View.GONE);
 	spinner=(Spinner)findViewById(R.id.mySpinner);
 	spinner.setOnItemSelectedListener(this);
-	iCurrentSelect = spinner.getSelectedItemPosition();
+	
 	
 
 	
@@ -671,6 +671,7 @@ public void handleGesture(Gesture g) {
 @Override
 public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 	// TODO Auto-generated method stub
+	
 	if(iCurrentSelect!=arg2)
 	{
 	TextView textView =(TextView)arg1;
@@ -683,7 +684,7 @@ public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
 	System.out.println("Comand="+command.getMessageText());//debug the TagID
 	byte[] arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
 	
-	
+	iCurrentSelect=arg2;
 	try {
 		outputStreamSendSelectAndTagID.write(arrayByte);
 		
