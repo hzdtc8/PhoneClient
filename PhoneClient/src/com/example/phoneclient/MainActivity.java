@@ -36,6 +36,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,7 +49,7 @@ import android.widget.Toast;
 import android.os.Build;
 
 
-public class MainActivity extends Activity implements GestureListener  {
+public class MainActivity extends Activity implements GestureListener,OnItemSelectedListener  {
 	public Button privateButton,setupButton; 
 	public Socket CommandSocket,receivingSocket,sendingSocket,sendMsgSocket; 
 	public OutputStream outputStream,outputStreamSendSelectAndTagID;//outputStream is belong to command_Socket;
@@ -660,6 +662,29 @@ public String[] trim(String msg)
 
 @Override
 public void handleGesture(Gesture g) {
+	// TODO Auto-generated method stub
+	
+}
+@Override
+public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	// TODO Auto-generated method stub
+	TextView textView =(TextView)arg1;
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), textView.getText().toString());
+	System.out.println("Comand="+command.getMessageText());//debug the TagID
+	byte[] arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	
+	
+	try {
+		outputStreamSendSelectAndTagID.write(arrayByte);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		
+		e.printStackTrace();
+	}
+	
+}
+@Override
+public void onNothingSelected(AdapterView<?> arg0) {
 	// TODO Auto-generated method stub
 	
 }
