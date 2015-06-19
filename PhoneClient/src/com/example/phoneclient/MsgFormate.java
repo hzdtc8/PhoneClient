@@ -96,6 +96,13 @@ public class MsgFormate {
 		return msgFormate;
 		
 	}
+	public static MsgFormate newParagraphSelect(String tagID,String caption,String content)
+	{
+		MsgFormate msgFormate = new MsgFormate();
+		msgFormate.messageText = MessageFormat.format(paragraphSelect,tagID,caption,content );
+		msgFormate.messageType = MsgType.paragraphSelect;
+		return msgFormate;
+	}
 	
 	
 	
