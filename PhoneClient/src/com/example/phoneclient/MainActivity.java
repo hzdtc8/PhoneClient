@@ -90,7 +90,7 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	LinearLayout dropdownlistLayout;
 	Spinner spinner;
 	String[] pathStrings;
-	
+	int iCurrentSelect;
 	
 	public void sendmessage()
 	{
@@ -206,6 +206,9 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	dropdownlistLayout=(LinearLayout)findViewById(R.id.dropdownLayout);
 	dropdownlistLayout.setVisibility(View.GONE);
 	spinner=(Spinner)findViewById(R.id.mySpinner);
+	spinner.setOnItemSelectedListener(this);
+	iCurrentSelect = spinner.getSelectedItemPosition();
+	
 
 	
 	mAinLayout=(LinearLayout)findViewById(R.id.MainLinear);
@@ -668,7 +671,14 @@ public void handleGesture(Gesture g) {
 @Override
 public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 	// TODO Auto-generated method stub
+	if(iCurrentSelect!=arg2)
+	{
 	TextView textView =(TextView)arg1;
+	
+	
+	Toast.makeText(this, "You Selected "+textView.getText(), Toast.LENGTH_SHORT).show();
+	
+	
 	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), textView.getText().toString());
 	System.out.println("Comand="+command.getMessageText());//debug the TagID
 	byte[] arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
@@ -676,10 +686,12 @@ public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
 	
 	try {
 		outputStreamSendSelectAndTagID.write(arrayByte);
+		
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		
 		e.printStackTrace();
+	}
 	}
 	
 }
