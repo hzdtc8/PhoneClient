@@ -87,6 +87,7 @@ public class MainActivity extends Activity implements GestureListener  {
 	LinearLayout gestureInterfaceLayout;
 	LinearLayout dropdownlistLayout;
 	Spinner spinner;
+	String[] pathStrings;
 	
 	
 	public void sendmessage()
@@ -153,21 +154,19 @@ public class MainActivity extends Activity implements GestureListener  {
 		}
 		else if (inMsg[0].startsWith("dropdownList"))
 		{
-			
+			String[] pathStrings ={"My favorite","My address","My hobby"};
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,pathStrings);
+		    spinner.setAdapter(adapter);
 
-runOnUiThread(new Runnable() {
-				
+			runOnUiThread(new Runnable() {
+
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					
+
 					mAinLayout.setVisibility(View.GONE);
 					dropdownlistLayout.setVisibility(View.VISIBLE);
-				    
-					
-				
-					 
-		    System.out.println("get the visbility: "+drawingtestLayout.getVisibility());
+
 				}
 			});
 			
@@ -205,8 +204,6 @@ runOnUiThread(new Runnable() {
 	dropdownlistLayout=(LinearLayout)findViewById(R.id.dropdownLayout);
 	dropdownlistLayout.setVisibility(View.GONE);
 	spinner=(Spinner)findViewById(R.id.mySpinner);
-	String[] pathStrings ={"My favorite","My address","My hobby"};
-	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,pathStrings);
 
 	
 	mAinLayout=(LinearLayout)findViewById(R.id.MainLinear);
@@ -273,24 +270,31 @@ bitmapView.setOnTouchListener(new View.OnTouchListener() {
 		
 		if (event.getAction()== event.ACTION_DOWN)
 		{
-		MsgFormate msg = MsgFormate.newObjectClick(tagID.getText().toString(), "objectClick", Float.toString(event.getX())+" "+Float.toString(event.getY()));
-System.out.println("objectclick msg="+msg.getMessageText());
-		bytes=msg.getMessageText().getBytes();
+					MsgFormate msg = MsgFormate.newObjectClick(
+							tagID.getText().toString(),
+							"objectClick",
+							Float.toString(event.getX()) + " "
+									+ Float.toString(event.getY()));
+					System.out.println("objectclick msg="
+							+ msg.getMessageText());
+					bytes = msg.getMessageText().getBytes();
 
 		//vibrator.vibrate(1000);
 
-try {
-	outputStreamSendSelectAndTagID.write(bytes);// tell the server object is select
-} catch (IOException e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
-}
+					try {
+						outputStreamSendSelectAndTagID.write(bytes);// tell the
+																	// server
+																	// object is
+																	// select
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
-		
-		}
-		return false;
-	}
-});
+				}
+				return false;
+			}
+		});
 // use OnlongClickListener to sent if it is select
 //image.setOnLongClickListener(new View.OnLongClickListener() {
 //	
