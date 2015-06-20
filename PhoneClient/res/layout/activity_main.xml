@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
 <com.example.phoneclient.BitmapView
     android:id="@+id/Image_test"
@@ -91,13 +91,14 @@
      android:id="@+id/ParagraphTranslation"
      android:layout_width="match_parent"
      android:layout_height="match_parent"
-     android:orientation="horizontal" >
+     android:orientation="horizontal"
+     android:visibility="gone" >
 
      <TextView
          android:id="@+id/paragraphView"
-         android:layout_width="wrap_content"
+         android:layout_width="425dp"
          android:layout_height="match_parent"
-         android:layout_weight="1.00"
+         android:layout_weight="0.06"
          android:text="TextView" />
 
      <LinearLayout
