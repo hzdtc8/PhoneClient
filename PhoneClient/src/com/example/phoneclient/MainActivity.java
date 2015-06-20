@@ -88,8 +88,11 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	LinearLayout textViewLayout;
 	LinearLayout gestureInterfaceLayout;
 	LinearLayout dropdownlistLayout;
+	LinearLayout paragraphSelectLayout;
+	TextView paraTextView;
 	Spinner spinner;
 	String[] pathStrings;
+	Button chineseButton,spanishButton,germanButton;
 	int iCurrentSelect;
 	
 	public void sendmessage()
@@ -174,6 +177,24 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 			
 			//onitemSelected
 		}
+		else if(inMsg[0].startsWith("textbox"))
+		{
+			final String text =inMsg[3];
+		
+
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+					mAinLayout.setVisibility(View.GONE);
+					paraTextView.setText(text);
+					paragraphSelectLayout.setVisibility(View.VISIBLE);
+
+				}
+			});
+		}
 
 		
 		
@@ -205,6 +226,10 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	
 	dropdownlistLayout=(LinearLayout)findViewById(R.id.dropdownLayout);
 	dropdownlistLayout.setVisibility(View.GONE);
+	
+	paragraphSelectLayout=(LinearLayout)findViewById(R.id.ParagraphTranslation);
+	paraTextView=(TextView)findViewById(R.id.paragraphView);
+	
 	spinner=(Spinner)findViewById(R.id.mySpinner);
 	spinner.setOnItemSelectedListener(this);
 	
