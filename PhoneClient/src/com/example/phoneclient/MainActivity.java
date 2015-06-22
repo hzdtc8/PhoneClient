@@ -48,8 +48,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Build;
 
-import com.memetix.mst.language.*;
-import com.memetix.mst.translate.*;
+import com.memetix.mst.language.Language;
+import com.memetix.mst.translate.Translate;
 
 
 public class MainActivity extends Activity implements GestureListener,OnItemSelectedListener  {
@@ -96,6 +96,8 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	Spinner spinner;
 	String[] pathStrings;
 	Button chineseButton,spanishButton,germanButton;
+	String textviewTextChinese,textviewTextSpanish,textviewTextGerman;
+	Button goToMainScreenButtonInTranslationView,goToMainScreenInDropDownList;
 	int iCurrentSelect;
 	
 	public void sendmessage()
@@ -123,6 +125,54 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	    else //invalid message
 	    	return;
 	}
+	public String translate(String content,String language)
+	{
+		String hello = null;
+
+		Translate.setClientId("PhoneClient");
+		Translate.setClientSecret("zheng.huang@ndsu.edu");
+		if(language.equals("French"))
+		{
+			try {
+			hello = Translate.execute(content, Language.FRENCH);
+			//System.out.println(hello);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		else if (language.equals("Chinese"))
+		{
+			try {
+				hello = Translate.execute(content, Language.CHINESE_SIMPLIFIED);
+				//System.out.println(hello);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (language.equals("Spanish"))
+		{
+			try {
+				hello = Translate.execute(content, Language.SPANISH);
+				//System.out.println(hello);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (language.equals("German"))
+		{
+			try {
+				hello = Translate.execute(content, Language.GERMAN);
+				//System.out.println(hello);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return hello;
+	}
 	
 	public void TranslateMessage(String Msg)
 	{
@@ -132,6 +182,7 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 		if(inMsg[0].startsWith("speech"))
 		{
 			speakOut(inMsg[3]);
+			
 		}
 		else if (inMsg[0].startsWith("vibrator"))
 		{
@@ -183,7 +234,10 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 		else if(inMsg[0].startsWith("textbox"))
 		{
 			final String text =inMsg[3];
-			
+			//translate(inMsg[3]);
+			textviewTextChinese=translate(inMsg[3],"Chinese");
+			textviewTextGerman=translate(inMsg[3], "German");
+			textviewTextSpanish=translate(inMsg[3], "Spanish");
 		
 
 			runOnUiThread(new Runnable() {
@@ -194,6 +248,8 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 
 					mAinLayout.setVisibility(View.GONE);
 					paraTextView.setText(text);
+					paraTextView.setTextSize(16);
+					
 					paragraphSelectLayout.setVisibility(View.VISIBLE);
 
 				}
@@ -209,6 +265,7 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
         //else it reads out the text you typed
        if (txt.length() > 0) {
            tSpeech.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
+			
        }
 
    }
@@ -218,11 +275,35 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Translate.setClientId("PhoneClient");
-		Translate.setClientSecret("zheng.huang@ndsu.edu");
+
 		
 	vibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
 	shartButton = (Button)findViewById(R.id.Share_MOde);
+	
+	goToMainScreenButtonInTranslationView =(Button)findViewById(R.id.goToMainScreen);
+	goToMainScreenButtonInTranslationView.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			paragraphSelectLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+
+			
+			
+		}
+	});
+	
+	goToMainScreenInDropDownList =(Button)findViewById(R.id.goToMainScreenInDropDownList);
+	goToMainScreenInDropDownList.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			dropdownlistLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+		}
+	});
 	
 	textViewLayout=(LinearLayout)findViewById(R.id.textViewLayout);
 	drawingtestLayout=(drawingtest)findViewById(R.id.drawingtest1);
@@ -238,27 +319,18 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	chineseButton =(Button)findViewById(R.id.Chinese);
 	spanishButton=(Button)findViewById(R.id.Spanish);
 	germanButton=(Button)findViewById(R.id.German);
+	
+	
+	
+	
 	chineseButton.setOnClickListener(new View.OnClickListener() {
+		
 		
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			String englishContentString=paraTextView.getText().toString();
-			try {
-				String fineeString=Translate.execute("Hello", Language.FRENCH);
-				System.out.println(fineeString);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			String Tochinese="lalala";
-			try {
-				//Tochinese = Translate.execute(englishContentString, Language.ENGLISH,Language.CHINESE_SIMPLIFIED);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			paraTextView.setText(Tochinese);
+              
+              paraTextView.setText(textviewTextChinese);
 			//paraTextView.setText("我们的目的是丰富的人，我们接触到的生活。通过提供最高性能的金融产品和服务，降低风险，增加资产，我们帮助个人和雇主履行他们的职责，并建立更好的明天。我们的文化是基于诚信和公平交易的坚定不移的信念，对待我们的客户和对方以尊严和尊重......我们采取审慎的风险，共同努力，以确保我们的成功和盈利能力在未来......我们努力不断增强的可访问性，专业性，性能和深度以及我们与客户的长期关系，协商的质量信誉。我们努力加以重视作为一个行业领导者在客户满意度，销售增长，产品性能，财务实力和盈利能力。");
 		}
 	});
@@ -267,7 +339,8 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			paraTextView.setText("Nuestro propósito es enriquecer las vidas de las personas que tocamos. Al proporcionar mayor rendimiento de productos y servicios que reducen los activos de riesgo y aumentar las financieras, ayudamos a las personas y los empleadores cumplan con sus responsabilidades y construir un mañana mejor. Nuestra cultura se basa en una creencia inquebrantable en la integridad y justas relaciones, tratar a nuestros clientes y con los demás con dignidad y respeto ... Tomamos riesgos prudentes y trabajar juntos para asegurar el éxito y la rentabilidad en el futuro ... Trabajamos duro para mejorar continuamente nuestra reputación para la accesibilidad, la profesionalidad, el rendimiento y la profundidad y la calidad de nuestras relaciones de consulta a largo plazo con los clientes ... Nos esforzamos en ser valorado como una empresa líder en la satisfacción del cliente, el crecimiento de las ventas, el rendimiento del producto, la solidez financiera y rentabilidad.");
+			paraTextView.setText(textviewTextSpanish);
+			//paraTextView.setText("Nuestro propósito es enriquecer las vidas de las personas que tocamos. Al proporcionar mayor rendimiento de productos y servicios que reducen los activos de riesgo y aumentar las financieras, ayudamos a las personas y los empleadores cumplan con sus responsabilidades y construir un mañana mejor. Nuestra cultura se basa en una creencia inquebrantable en la integridad y justas relaciones, tratar a nuestros clientes y con los demás con dignidad y respeto ... Tomamos riesgos prudentes y trabajar juntos para asegurar el éxito y la rentabilidad en el futuro ... Trabajamos duro para mejorar continuamente nuestra reputación para la accesibilidad, la profesionalidad, el rendimiento y la profundidad y la calidad de nuestras relaciones de consulta a largo plazo con los clientes ... Nos esforzamos en ser valorado como una empresa líder en la satisfacción del cliente, el crecimiento de las ventas, el rendimiento del producto, la solidez financiera y rentabilidad.");
 		}
 	});
 	germanButton.setOnClickListener(new View.OnClickListener() {
@@ -275,7 +348,8 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			paraTextView.setText("Unser Ziel ist es, das Leben von Menschen, die wir berühren, zu bereichern. Durch die Bereitstellung von leistungsstärksten Finanzprodukte und Dienstleistungen, die Risiken und Steigerung Vermögen zu reduzieren, helfen wir Einzelpersonen und Arbeitgeber ihrer Verantwortung nachkommen und bauen besser morgen. Unsere Kultur basiert auf einem unerschütterlichen Glauben an die Integrität und fairen Umgang basiert, die Behandlung unserer Kunden und einander mit Würde und Respekt ... Wir nehmen umsichtige Risiken und zusammenarbeiten, um den Erfolg und die Rentabilität in der Zukunft zu gewährleisten ... Wir arbeiten hart daran, verbessern kontinuierlich unsere Reputation für die Barrierefreiheit, Professionalität, Leistung und die Tiefe und Qualität unserer langfristigen beratende Beziehungen zu Kunden ... Wir bemühen uns als Branchenführer in der Kundenzufriedenheit, Umsatzwachstum, Produktleistung, Finanzkraft und bewerten Rentabilität.");
+			paraTextView.setText(textviewTextGerman);
+			//paraTextView.setText("Unser Ziel ist es, das Leben von Menschen, die wir berühren, zu bereichern. Durch die Bereitstellung von leistungsstärksten Finanzprodukte und Dienstleistungen, die Risiken und Steigerung Vermögen zu reduzieren, helfen wir Einzelpersonen und Arbeitgeber ihrer Verantwortung nachkommen und bauen besser morgen. Unsere Kultur basiert auf einem unerschütterlichen Glauben an die Integrität und fairen Umgang basiert, die Behandlung unserer Kunden und einander mit Würde und Respekt ... Wir nehmen umsichtige Risiken und zusammenarbeiten, um den Erfolg und die Rentabilität in der Zukunft zu gewährleisten ... Wir arbeiten hart daran, verbessern kontinuierlich unsere Reputation für die Barrierefreiheit, Professionalität, Leistung und die Tiefe und Qualität unserer langfristigen beratende Beziehungen zu Kunden ... Wir bemühen uns als Branchenführer in der Kundenzufriedenheit, Umsatzwachstum, Produktleistung, Finanzkraft und bewerten Rentabilität.");
 		}
 	});
 	
@@ -374,29 +448,6 @@ bitmapView.setOnTouchListener(new View.OnTouchListener() {
 				return false;
 			}
 		});
-// use OnlongClickListener to sent if it is select
-//image.setOnLongClickListener(new View.OnLongClickListener() {
-//	
-//	@Override
-//	public boolean onLongClick(View v) {
-//		// TODO Auto-generated method stub
-//		Context context = getApplicationContext();
-//		CharSequence text = "object selected";
-//		int duration = Toast.LENGTH_SHORT;
-//		String objectSelect= "true";
-//		byte[] bytes = objectSelect.getBytes();
-//		vibrator.vibrate(500);
-//		try {
-//			outputStreamSendSelectAndTagID.write(bytes);// tell the server object is select
-//			Toast toast = Toast.makeText(context, text, duration);
-//			toast.show();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return false;
-//	}
-//});
 
 
 
@@ -423,14 +474,6 @@ privateButton.setOnClickListener(new View.OnClickListener() {
 	receiveThread.start();
 	sendingThread.start();
 	
-
-	
-//	try {
-//		outputStreamSendSelectAndTagID.write(arrayByte);// using sendingsocket to sent the TagID to the server
-//	} catch (IOException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
 
 	
 	}

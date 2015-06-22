@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:visibility="visible" >
+        android:visibility="gone" >
 
 <com.example.phoneclient.BitmapView
     android:id="@+id/Image_test"
@@ -82,8 +82,12 @@
         android:layout_gravity="center"
  
          />
-        
-        
+
+     <Button
+         android:id="@+id/goToMainScreenInDropDownList"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Go to main screen" />
         
     </LinearLayout>
 
@@ -124,6 +128,12 @@
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
              android:text="German" />
+         
+         <Button
+             android:id="@+id/goToMainScreen"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="Go to main screen" />
 
      </LinearLayout>
 
@@ -133,7 +143,7 @@
         android:id="@+id/GestureInterface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <LinearLayout
             android:id="@+id/textViewLayout"
