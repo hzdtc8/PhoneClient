@@ -99,6 +99,8 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	String textviewTextChinese,textviewTextSpanish,textviewTextGerman;
 	Button goToMainScreenButtonInTranslationView,goToMainScreenInDropDownList;
 	int iCurrentSelect;
+	EditText usernameEditText,passwordEditText;
+	Button loginButton;
 	
 	public void sendmessage()
 	{
@@ -200,16 +202,28 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 				    mAinLayout.setVisibility(View.GONE);
 				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
 				    
-					
-				
-					 
-		    System.out.println("get the visbility: "+drawingtestLayout.getVisibility());
+
 				}
 			});
 		}
 		else if (inMsg[0].startsWith("failure"))
 		{
 			//
+		}
+		else if (inMsg[0].startsWith("editText"))
+		{
+runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					
+				    mAinLayout.setVisibility(View.GONE);
+				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
+				    
+
+				}
+			});
 		}
 		else if (inMsg[0].startsWith("dropdownList"))
 		{
@@ -279,6 +293,28 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 		
 	vibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
 	shartButton = (Button)findViewById(R.id.Share_MOde);
+	
+	passwordEditText =(EditText)findViewById(R.id.Password);
+	usernameEditText=(EditText)findViewById(R.id.Username);
+	loginButton = (Button)findViewById(R.id.Login);
+	loginButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			
+			MsgFormate msg = MsgFormate.newReturnValue(tagID.getText().toString(), "login form", usernameEditText.getText().toString()+";"+passwordEditText.getText().toString());
+			byte[] arrayByte = msg.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	});
+	
 	
 	goToMainScreenButtonInTranslationView =(Button)findViewById(R.id.goToMainScreen);
 	goToMainScreenButtonInTranslationView.setOnClickListener(new View.OnClickListener() {
