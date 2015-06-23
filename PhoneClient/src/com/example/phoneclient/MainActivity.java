@@ -12,8 +12,17 @@ import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.util.Locale;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+
 import com.michaelmarner.gestures.Gesture;
+import com.michaelmarner.gestures.GestureEngine;
 import com.michaelmarner.gestures.GestureListener;
+import com.michaelmarner.gestures.GestureMatch;
+import com.michaelmarner.gestures.GestureMode;
+import com.michaelmarner.gestures.HandleXml;
 import com.michaelmarner.gestures.drawingtest;
 
 import android.R.color;
@@ -101,7 +110,9 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	int iCurrentSelect;
 	EditText usernameEditText,passwordEditText;
 	Button loginButton;
-	
+	GestureEngine engine;
+	GestureMode opMode;
+	//hello this is test
 	public void sendmessage()
 	{
 		Intent intent = new Intent(this, DisplayMessageActivity.class);
@@ -198,9 +209,9 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					
-				    mAinLayout.setVisibility(View.GONE);
-				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
+					gestureInterfaceLayout.setVisibility(View.GONE);;
+				    mAinLayout.setVisibility(View.VISIBLE);
+				    
 				    
 
 				}
@@ -296,6 +307,9 @@ runOnUiThread(new Runnable() {
 	
 	passwordEditText =(EditText)findViewById(R.id.Password);
 	usernameEditText=(EditText)findViewById(R.id.Username);
+
+	
+	
 	loginButton = (Button)findViewById(R.id.Login);
 	loginButton.setOnClickListener(new View.OnClickListener() {
 		
@@ -342,7 +356,53 @@ runOnUiThread(new Runnable() {
 	});
 	
 	textViewLayout=(LinearLayout)findViewById(R.id.textViewLayout);
+	XmlPullParserFactory xFactory;
+	engine= new GestureEngine();
 	drawingtestLayout=(drawingtest)findViewById(R.id.drawingtest1);
+	opMode=GestureMode.RECOGNISE;
+	drawingtestLayout.addListener(this);
+	String[] flists = null;
+	
+	//get the asset file named gesture
+ try {
+	flists = this.getAssets().list("gesture");
+	for(String a:flists)
+	{Log.i("lalalala",a);
+	}
+} catch (IOException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+} 
+ //each item of list parse into engine
+ for(String a:flists)
+	{
+	 try {
+		xFactory = XmlPullParserFactory.newInstance();
+		Log.i("Assets.demo", "xfactory create.");
+		XmlPullParser xParser = xFactory.newPullParser();
+		Log.i("Assets.demo", "xParser create");
+		InputStream in_s= getApplicationContext().getAssets().open("gesture/"+a);
+		Log.i("Assets.demo", "inputsream create");
+		xParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+		Log.i("Assets.demo", "setFeture");
+		xParser.setInput(in_s, null);
+		Log.i("Assets.demo", "setInput");
+		HandleXml handleXml = new HandleXml();
+		Log.i("Assets.demo", "create handleXml");
+		handleXml.parseXMLAndStoreIt(xParser);
+		Log.i("Assets.demo", "parse starting");
+		engine.addGesture(handleXml.getGesture());
+		//put all the gesture into Gesture engine 
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (XmlPullParserException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	}
+	
 	
 	gestureInterfaceLayout=(LinearLayout)findViewById(R.id.GestureInterface);
 	gestureInterfaceLayout.setVisibility(View.GONE);
@@ -397,7 +457,7 @@ runOnUiThread(new Runnable() {
 	
 	mAinLayout=(LinearLayout)findViewById(R.id.MainLinear);
 	//drawingtestLayout.setVisibility(View.GONE);
-	drawingtestLayout.addListener(this);
+	
 	setupButton = (Button)findViewById(R.id.Setup_Mode);// setup button is used to setup  command connection with the server
 	setupButton.setOnClickListener(new View.OnClickListener() {
 		
@@ -819,6 +879,26 @@ public String[] trim(String msg)
 @Override
 public void handleGesture(Gesture g) {
 	// TODO Auto-generated method stub
+	Log.i("handleGesture", "Point: "+g.getPoints().toString());
+	try {	
+		
+		Log.i("match name", "recognise starts");
+		GestureMatch match = engine.recognise(g);
+			Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
+Log.i("match name", "match name: "+match.gesture.name);
+
+	passwordEditText.setText(match.gesture.name);
+	usernameEditText.setText(match.gesture.name);
+	
+			
+			Toast.makeText(MainActivity.this,"We find the your input", 100).show();
+			
+		
+	} catch (Exception e) {
+		e.printStackTrace();// TODO: handle exception
+	}
+	
+
 	
 }
 @Override
