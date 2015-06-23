@@ -101,6 +101,7 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	LinearLayout gestureInterfaceLayout;
 	LinearLayout dropdownlistLayout;
 	LinearLayout paragraphSelectLayout;
+	LinearLayout extendedScreenLayout;
 	TextView paraTextView;
 	Spinner spinner;
 	String[] pathStrings;
@@ -110,6 +111,9 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	int iCurrentSelect;
 	EditText usernameEditText,passwordEditText;
 	Button loginButton;
+	Button growFontButton,shrinkFontButton,redButton,blueButton,yellowButton;
+	drawingtest extendDrawingtest;
+	
 	GestureEngine engine;
 	GestureMode opMode;
 	//hello this is test
@@ -217,6 +221,22 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 				}
 			});
 		}
+		else if (inMsg[0].startsWith("surfaceTextbox"))
+		{
+runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					
+				    mAinLayout.setVisibility(View.GONE);
+				    extendedScreenLayout.setVisibility(View.VISIBLE);
+				   
+				    
+
+				}
+			});
+		}
 		else if (inMsg[0].startsWith("failure"))
 		{
 			//
@@ -304,6 +324,83 @@ runOnUiThread(new Runnable() {
 		
 	vibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
 	shartButton = (Button)findViewById(R.id.Share_MOde);
+	
+	extendDrawingtest=(drawingtest)findViewById(R.id.drawingtest2);
+	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedScreen);
+	redButton=(Button)findViewById(R.id.Red);
+	redButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+		MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFont","red" );
+		byte[] arrayByte = msgFormate.getMessageText().getBytes();
+		
+		try {
+			outputStreamSendSelectAndTagID.write(arrayByte);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		}
+	});
+	blueButton=(Button)findViewById(R.id.Blue);
+	blueButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFont","blue" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	});
+	
+	yellowButton=(Button)findViewById(R.id.Yellow);
+	yellowButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFont","yellow" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	});
+	
+	growFontButton=(Button)findViewById(R.id.GrowFont);
+	growFontButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
+	
+	shrinkFontButton=(Button)findViewById(R.id.ShrinkFont);
+	shrinkFontButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
+	
 	
 	passwordEditText =(EditText)findViewById(R.id.Password);
 	usernameEditText=(EditText)findViewById(R.id.Username);
