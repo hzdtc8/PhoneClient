@@ -2,6 +2,7 @@ package com.example.phoneclient;
 
 import java.io.DataOutputStream;
 
+import android.opengl.Visibility;
 import android.os.Vibrator;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.GpsStatus.Listener;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -61,7 +63,7 @@ import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
 
 
-public class MainActivity extends Activity implements GestureListener,OnItemSelectedListener  {
+public class MainActivity extends Activity implements OnItemSelectedListener, GestureListener  {
 	public Button privateButton,setupButton; 
 	public Socket CommandSocket,receivingSocket,sendingSocket,sendMsgSocket; 
 	public OutputStream outputStream,outputStreamSendSelectAndTagID;//outputStream is belong to command_Socket;
@@ -102,12 +104,13 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 	LinearLayout dropdownlistLayout;
 	LinearLayout paragraphSelectLayout;
 	LinearLayout extendedScreenLayout;
+	LinearLayout loginformLayout;
 	TextView paraTextView;
 	Spinner spinner;
 	String[] pathStrings;
 	Button chineseButton,spanishButton,germanButton;
 	String textviewTextChinese,textviewTextSpanish,textviewTextGerman;
-	Button goToMainScreenButtonInTranslationView,goToMainScreenInDropDownList;
+	Button goToMainScreenButtonInTranslationView,goToMainScreenInDropDownList,goToMainScreenButtonInExtendedScreen;
 	int iCurrentSelect;
 	EditText usernameEditText,passwordEditText;
 	Button loginButton;
@@ -201,7 +204,7 @@ public class MainActivity extends Activity implements GestureListener,OnItemSele
 			speakOut(inMsg[3]);
 			
 		}
-		else if (inMsg[0].startsWith("vibrator"))
+		else if (inMsg[0].startsWith("vibrate"))
 		{
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         	v.vibrate(200);
@@ -228,10 +231,10 @@ runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					
 				    mAinLayout.setVisibility(View.GONE);
+				    loginformLayout.setVisibility(View.GONE);
 				    extendedScreenLayout.setVisibility(View.VISIBLE);
-				   
+				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
 				    
 
 				}
@@ -250,6 +253,8 @@ runOnUiThread(new Runnable() {
 					// TODO Auto-generated method stub
 					
 				    mAinLayout.setVisibility(View.GONE);
+				    loginformLayout.setVisibility(View.VISIBLE);
+				    extendedScreenLayout.setVisibility(View.GONE);
 				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
 				    
 
@@ -320,20 +325,62 @@ runOnUiThread(new Runnable() {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		XmlPullParserFactory xFactory;
+		engine= new GestureEngine();
+		opMode=GestureMode.RECOGNISE;
+		String[] flists = null;
 		
+		//get the asset file named gesture
+	 try {
+		flists = this.getAssets().list("gesture");
+		for(String a:flists)
+		{Log.i("lalalala",a);
+		}
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	} 
+	 //each item of list parse into engine
+	 for(String a:flists)
+		{
+		 try {
+			xFactory = XmlPullParserFactory.newInstance();
+			Log.i("Assets.demo", "xfactory create.");
+			XmlPullParser xParser = xFactory.newPullParser();
+			Log.i("Assets.demo", "xParser create");
+			InputStream in_s= getApplicationContext().getAssets().open("gesture/"+a);
+			Log.i("Assets.demo", "inputsream create");
+			xParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+			Log.i("Assets.demo", "setFeture");
+			xParser.setInput(in_s, null);
+			Log.i("Assets.demo", "setInput");
+			HandleXml handleXml = new HandleXml();
+			Log.i("Assets.demo", "create handleXml");
+			handleXml.parseXMLAndStoreIt(xParser);
+			Log.i("Assets.demo", "parse starting");
+			engine.addGesture(handleXml.getGesture());
+			//put all the gesture into Gesture engine 
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 	vibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
 	shartButton = (Button)findViewById(R.id.Share_MOde);
+	loginformLayout = (LinearLayout)findViewById(R.id.loginform);
+	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedSceen);
 	
-	extendDrawingtest=(drawingtest)findViewById(R.id.drawingtest2);
-	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedScreen);
 	redButton=(Button)findViewById(R.id.Red);
 	redButton.setOnClickListener(new View.OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-		MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFont","red" );
+		MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
 		byte[] arrayByte = msgFormate.getMessageText().getBytes();
 		
 		try {
@@ -351,7 +398,7 @@ runOnUiThread(new Runnable() {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFont","blue" );
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","blue" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
 			try {
@@ -369,7 +416,7 @@ runOnUiThread(new Runnable() {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFont","yellow" );
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","yellow" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
 			try {
@@ -387,7 +434,15 @@ runOnUiThread(new Runnable() {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","grow" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	});
 	
@@ -397,13 +452,22 @@ runOnUiThread(new Runnable() {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","shrink" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	});
 	
 	
 	passwordEditText =(EditText)findViewById(R.id.Password);
 	usernameEditText=(EditText)findViewById(R.id.Username);
+	
 
 	
 	
@@ -452,53 +516,107 @@ runOnUiThread(new Runnable() {
 		}
 	});
 	
-	textViewLayout=(LinearLayout)findViewById(R.id.textViewLayout);
-	XmlPullParserFactory xFactory;
-	engine= new GestureEngine();
-	drawingtestLayout=(drawingtest)findViewById(R.id.drawingtest1);
-	opMode=GestureMode.RECOGNISE;
-	drawingtestLayout.addListener(this);
-	String[] flists = null;
-	
-	//get the asset file named gesture
- try {
-	flists = this.getAssets().list("gesture");
-	for(String a:flists)
-	{Log.i("lalalala",a);
-	}
-} catch (IOException e1) {
-	// TODO Auto-generated catch block
-	e1.printStackTrace();
-} 
- //each item of list parse into engine
- for(String a:flists)
-	{
-	 try {
-		xFactory = XmlPullParserFactory.newInstance();
-		Log.i("Assets.demo", "xfactory create.");
-		XmlPullParser xParser = xFactory.newPullParser();
-		Log.i("Assets.demo", "xParser create");
-		InputStream in_s= getApplicationContext().getAssets().open("gesture/"+a);
-		Log.i("Assets.demo", "inputsream create");
-		xParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-		Log.i("Assets.demo", "setFeture");
-		xParser.setInput(in_s, null);
-		Log.i("Assets.demo", "setInput");
-		HandleXml handleXml = new HandleXml();
-		Log.i("Assets.demo", "create handleXml");
-		handleXml.parseXMLAndStoreIt(xParser);
-		Log.i("Assets.demo", "parse starting");
-		engine.addGesture(handleXml.getGesture());
-		//put all the gesture into Gesture engine 
+	goToMainScreenButtonInExtendedScreen = (Button)findViewById(R.id.goToMainScreenInExtendedScreen);
+	goToMainScreenButtonInExtendedScreen.setOnClickListener(new View.OnClickListener() {
 		
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (XmlPullParserException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	}
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			gestureInterfaceLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+		}
+	});
+	
+	textViewLayout=(LinearLayout)findViewById(R.id.textViewLayout);
+	drawingtestLayout=(drawingtest)findViewById(R.id.drawingtest1);
+	drawingtestLayout.addListener(new GestureListener() {
+		
+		@Override
+		public void handleGesture(Gesture g) {
+			// TODO Auto-generated method stub
+			Log.i("handleGesture", "Point: "+g.getPoints().toString());
+			try {	
+				
+				Log.i("match name", "recognise starts");
+				GestureMatch match = engine.recognise(g);
+					Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
+		Log.i("match name", "match name: "+match.gesture.name);
+		if(match.gesture.name.equals("hcilab")||match.gesture.name.equals("hcilabgood")&&loginformLayout.getVisibility()==0)
+		{
+			passwordEditText.setText(match.gesture.name);
+			usernameEditText.setText(match.gesture.name);
+			
+					
+					Toast.makeText(MainActivity.this,"We find the your input", 100).show();
+		}
+		else if(match.gesture.name.equals("red")&&extendedScreenLayout.getVisibility()==0) {
+			
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if(match.gesture.name.equals("blue")&&extendedScreenLayout.getVisibility()==0)
+		{
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","blue" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		else if(match.gesture.name.equals("grow")&&extendedScreenLayout.getVisibility()==0)
+		{
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","grow" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		else if(match.gesture.name.equals("shrink")&&extendedScreenLayout.getVisibility()==0)
+		{
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","shrink" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		
+		
+		
+		
+		
+		
+				
+			} catch (Exception e) {
+				e.printStackTrace();// TODO: handle exception
+			}
+		}
+	});
+
+	
+	
+	
+
 	
 	
 	gestureInterfaceLayout=(LinearLayout)findViewById(R.id.GestureInterface);
@@ -973,32 +1091,32 @@ public String[] trim(String msg)
 
 	}
 
-@Override
-public void handleGesture(Gesture g) {
-	// TODO Auto-generated method stub
-	Log.i("handleGesture", "Point: "+g.getPoints().toString());
-	try {	
-		
-		Log.i("match name", "recognise starts");
-		GestureMatch match = engine.recognise(g);
-			Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
-Log.i("match name", "match name: "+match.gesture.name);
 
-	passwordEditText.setText(match.gesture.name);
-	usernameEditText.setText(match.gesture.name);
-	
-			
-			Toast.makeText(MainActivity.this,"We find the your input", 100).show();
-			
-		
-	} catch (Exception e) {
-		e.printStackTrace();// TODO: handle exception
-	}
-	
+//public void handleGesture(Gesture g) {
+//	// TODO Auto-generated method stub
+//	Log.i("handleGesture", "Point: "+g.getPoints().toString());
+//	try {	
+//		
+//		Log.i("match name", "recognise starts");
+//		GestureMatch match = engine.recognise(g);
+//			Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
+//Log.i("match name", "match name: "+match.gesture.name);
+//
+//	passwordEditText.setText(match.gesture.name);
+//	usernameEditText.setText(match.gesture.name);
+//	
+//			
+//			Toast.makeText(MainActivity.this,"We find the your input", 100).show();
+//			
+//		
+//	} catch (Exception e) {
+//		e.printStackTrace();// TODO: handle exception
+//	}
+//	
+//
+//	
+//}
 
-	
-}
-@Override
 public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 	// TODO Auto-generated method stub
 	byte[] arrayByte=null;
@@ -1044,6 +1162,27 @@ public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
 @Override
 public void onNothingSelected(AdapterView<?> arg0) {
 	// TODO Auto-generated method stub
+	
+}
+@Override
+public void handleGesture(Gesture g) {
+	// TODO Auto-generated method stub
+	GestureMatch match = engine.recognise(g);
+	Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
+	Log.i("match name", "match name: "+match.gesture.name);
+	
+	if (match.gesture.name.equals("red"))
+	{
+		MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
+		byte[] arrayByte = msgFormate.getMessageText().getBytes();
+		
+		try {
+			outputStreamSendSelectAndTagID.write(arrayByte);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }
 	
