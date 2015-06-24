@@ -105,6 +105,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	LinearLayout paragraphSelectLayout;
 	LinearLayout extendedScreenLayout;
 	LinearLayout loginformLayout;
+	LinearLayout lockStatusLayout;
 	TextView paraTextView;
 	Spinner spinner;
 	String[] pathStrings;
@@ -116,6 +117,9 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	Button loginButton;
 	Button growFontButton,shrinkFontButton,redButton,blueButton,yellowButton;
 	drawingtest extendDrawingtest;
+	
+	Button yesAccessControlButton,noAccessControlButton;
+	TextView warningAccessControlTextView;
 	
 	GestureEngine engine;
 	GestureMode opMode;
@@ -224,6 +228,25 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 				}
 			});
 		}
+		else if(inMsg[0].startsWith("image")) {
+			
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+				    mAinLayout.setVisibility(View.GONE);
+				    lockStatusLayout.setVisibility(View.VISIBLE);
+				    
+				    
+				    
+
+				}
+			});			
+			
+		}
+		
 		else if (inMsg[0].startsWith("surfaceTextbox"))
 		{
 runOnUiThread(new Runnable() {
@@ -325,6 +348,7 @@ runOnUiThread(new Runnable() {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+	
 		XmlPullParserFactory xFactory;
 		engine= new GestureEngine();
 		opMode=GestureMode.RECOGNISE;
@@ -370,6 +394,30 @@ runOnUiThread(new Runnable() {
 		}
 		}
 	vibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
+	
+	yesAccessControlButton=(Button)findViewById(R.id.Yes);
+	noAccessControlButton =(Button)findViewById(R.id.No);
+	warningAccessControlTextView =(TextView)findViewById(R.id.Warning);
+	lockStatusLayout=(LinearLayout)findViewById(R.id.LockStatus);
+	
+	yesAccessControlButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "accessControl","lock" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	});
+		
+	
 	shartButton = (Button)findViewById(R.id.Share_MOde);
 	loginformLayout = (LinearLayout)findViewById(R.id.loginform);
 	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedSceen);
