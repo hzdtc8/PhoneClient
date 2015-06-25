@@ -238,6 +238,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 
 				    mAinLayout.setVisibility(View.GONE);
 				    lockStatusLayout.setVisibility(View.VISIBLE);
+				    //textview.settext(inMsg[1]);  edit newImage() int the msgFormate, add one input value as the lock or unlock 
 				    
 				    
 				    
@@ -405,6 +406,7 @@ runOnUiThread(new Runnable() {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
+			// in "lock" should use valiable based on the msg from lockSelected(surface)
 			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "accessControl","lock" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
