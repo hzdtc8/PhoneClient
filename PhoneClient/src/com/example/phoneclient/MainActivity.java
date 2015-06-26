@@ -29,7 +29,9 @@ import com.michaelmarner.gestures.drawingtest;
 import android.R.color;
 import android.R.string;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -111,7 +113,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	String[] pathStrings;
 	Button chineseButton,spanishButton,germanButton;
 	String textviewTextChinese,textviewTextSpanish,textviewTextGerman;
-	Button goToMainScreenButtonInTranslationView,goToMainScreenInDropDownList,goToMainScreenButtonInExtendedScreen;
+	Button goToMainScreenButtonInTranslationView,goToMainScreenInDropDownList,goToMainScreenButtonInExtendedScreen,goToMainScreenInAccessControl;
 	int iCurrentSelect;
 	EditText usernameEditText,passwordEditText;
 	Button loginButton;
@@ -120,6 +122,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	
 	Button yesAccessControlButton,noAccessControlButton;
 	TextView warningAccessControlTextView;
+	String currentLockStatuString="lock";
 	
 	GestureEngine engine;
 	GestureMode opMode;
@@ -208,6 +211,36 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 			speakOut(inMsg[3]);
 			
 		}
+		else if (inMsg[0].startsWith("dialog")) {
+			final AlertDialog.Builder builder=new AlertDialog.Builder(this);
+			final String messageString = inMsg[3];
+			
+			
+runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+				    builder.setMessage(messageString)
+			.setPositiveButton("okay",  new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // FIRE ZE MISSILES!
+                }
+            });
+            
+			builder.setTitle("warning");
+			
+			AlertDialog dialog=builder.create();
+			dialog.show();
+				    
+
+				}
+			});
+			
+			
+			
+		}
 		else if (inMsg[0].startsWith("vibrate"))
 		{
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -230,6 +263,9 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 		}
 		else if(inMsg[0].startsWith("image")) {
 			
+			currentLockStatuString=inMsg[2];
+			
+			
 			runOnUiThread(new Runnable() {
 				
 				@Override
@@ -238,13 +274,14 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 
 				    mAinLayout.setVisibility(View.GONE);
 				    lockStatusLayout.setVisibility(View.VISIBLE);
-				    
-				    
-				    
 
 				}
 			});			
 			
+			
+			
+			 
+
 		}
 		
 		else if (inMsg[0].startsWith("surfaceTextbox"))
@@ -258,6 +295,7 @@ runOnUiThread(new Runnable() {
 				    loginformLayout.setVisibility(View.GONE);
 				    extendedScreenLayout.setVisibility(View.VISIBLE);
 				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
+				    lockStatusLayout.setVisibility(View.GONE);
 				    
 
 				}
@@ -398,6 +436,13 @@ runOnUiThread(new Runnable() {
 	yesAccessControlButton=(Button)findViewById(R.id.Yes);
 	noAccessControlButton =(Button)findViewById(R.id.No);
 	warningAccessControlTextView =(TextView)findViewById(R.id.Warning);
+	if (currentLockStatuString=="lock")
+	{
+		 warningAccessControlTextView.setText("Do you want to lock the textbox");
+	}
+	else {
+		warningAccessControlTextView.setText("Do you want to unlock the textbox");
+	}
 	lockStatusLayout=(LinearLayout)findViewById(R.id.LockStatus);
 	
 	yesAccessControlButton.setOnClickListener(new View.OnClickListener() {
@@ -405,7 +450,7 @@ runOnUiThread(new Runnable() {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "accessControl","lock" );
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "accessControl",currentLockStatuString );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
 			try {
@@ -413,6 +458,22 @@ runOnUiThread(new Runnable() {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			if(currentLockStatuString=="lock")
+			{runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+					warningAccessControlTextView.setText("Do you want to lock the textbox");
+
+
+				}
+			});
+			}
+			else {
+				warningAccessControlTextView.setText("Do you want to unlock the textbox");
 			}
 		}
 	});
@@ -455,6 +516,7 @@ runOnUiThread(new Runnable() {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 	});
 	
@@ -575,6 +637,17 @@ runOnUiThread(new Runnable() {
 		}
 	});
 	
+	goToMainScreenInAccessControl =(Button)findViewById(R.id.goToMainScreenInAccessControl);
+	goToMainScreenInAccessControl.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			lockStatusLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+		}
+	});
+	
 	textViewLayout=(LinearLayout)findViewById(R.id.textViewLayout);
 	drawingtestLayout=(drawingtest)findViewById(R.id.drawingtest1);
 	drawingtestLayout.addListener(new GestureListener() {
@@ -582,6 +655,9 @@ runOnUiThread(new Runnable() {
 		@Override
 		public void handleGesture(Gesture g) {
 			// TODO Auto-generated method stub
+			switch(opMode)
+			{ 
+			case RECOGNISE:
 			Log.i("handleGesture", "Point: "+g.getPoints().toString());
 			try {	
 				
@@ -657,8 +733,13 @@ runOnUiThread(new Runnable() {
 				
 			} catch (Exception e) {
 				e.printStackTrace();// TODO: handle exception
-			}
+			}break;
+			case RECORD:
+				
 		}
+			
+		}
+			
 	});
 
 	
