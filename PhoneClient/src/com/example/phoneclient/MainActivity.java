@@ -1,5 +1,6 @@
 package com.example.phoneclient;
 
+import java.awt.List;
 import java.io.DataOutputStream;
 
 import android.opengl.Visibility;
@@ -11,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
+import java.util.LinkedList;
 import java.util.Locale;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -42,6 +44,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.speech.tts.TextToSpeech;
+import android.text.AndroidCharacter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,6 +59,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -97,7 +101,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	ImageView  image;
 	Vibrator vibrator;
 	TextToSpeech tSpeech;
-	Button shartButton;
+	Button personalizeGestureButton;
 	Thread receiveImageThread,receiveMsgThread,receiveThread,sendingThread;
 	drawingtest drawingtestLayout;
 	LinearLayout mAinLayout;
@@ -119,10 +123,13 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	Button loginButton;
 	Button growFontButton,shrinkFontButton,redButton,blueButton,yellowButton;
 	drawingtest extendDrawingtest;
-	
+	java.util.List<String> gestureList = new LinkedList<>();
 	Button yesAccessControlButton,noAccessControlButton;
 	TextView warningAccessControlTextView;
 	String currentLockStatuString="lock";
+	
+	LinearLayout gestureListInterfaceLayout;
+	ListView gestureListView;
 	
 	GestureEngine engine;
 	GestureMode opMode;
@@ -422,6 +429,7 @@ runOnUiThread(new Runnable() {
 			Log.i("Assets.demo", "parse starting");
 			engine.addGesture(handleXml.getGesture());
 			//put all the gesture into Gesture engine 
+			gestureList.add(handleXml.getGesture().name);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -479,7 +487,7 @@ runOnUiThread(new Runnable() {
 	});
 		
 	
-	shartButton = (Button)findViewById(R.id.Share_MOde);
+	personalizeGestureButton = (Button)findViewById(R.id.PersonalizeG);
 	loginformLayout = (LinearLayout)findViewById(R.id.loginform);
 	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedSceen);
 	
@@ -742,12 +750,6 @@ runOnUiThread(new Runnable() {
 			
 	});
 
-	
-	
-	
-
-	
-	
 	gestureInterfaceLayout=(LinearLayout)findViewById(R.id.GestureInterface);
 	gestureInterfaceLayout.setVisibility(View.GONE);
 	
@@ -759,10 +761,7 @@ runOnUiThread(new Runnable() {
 	chineseButton =(Button)findViewById(R.id.Chinese);
 	spanishButton=(Button)findViewById(R.id.Spanish);
 	germanButton=(Button)findViewById(R.id.German);
-	
-	
-	
-	
+
 	chineseButton.setOnClickListener(new View.OnClickListener() {
 		
 		
@@ -796,9 +795,7 @@ runOnUiThread(new Runnable() {
 	spinner=(Spinner)findViewById(R.id.mySpinner);
 	spinner.setOnItemSelectedListener(this);
 	
-	
 
-	
 	mAinLayout=(LinearLayout)findViewById(R.id.MainLinear);
 	//drawingtestLayout.setVisibility(View.GONE);
 	
@@ -829,17 +826,28 @@ runOnUiThread(new Runnable() {
 			}
 		}
 	});
+	gestureListInterfaceLayout=(LinearLayout)findViewById(R.id.GestureListInterface);
+	gestureListView=(ListView)findViewById(R.id.GestureListView);
 	
-	shartButton.setOnClickListener(new View.OnClickListener() {
+	ArrayAdapter<String> adapterList=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, gestureList);
+	gestureListView.setAdapter(adapterList);
+	
+	personalizeGestureButton.setOnClickListener(new View.OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			tSpeech.speak("server is connected", TextToSpeech.QUEUE_FLUSH, null);
+			tSpeech.speak("You are in the personalize gesture mode", TextToSpeech.QUEUE_FLUSH, null);
 			vibrator.vibrate(500);
+			mAinLayout.setVisibility(View.GONE);
+			gestureListInterfaceLayout.setVisibility(View.VISIBLE);
+			gestureInterfaceLayout.setVisibility(View.VISIBLE);
+			
+			
 			//new Connection().execute();
 		}
 	});
+	
 		tSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
 	
 	@Override
