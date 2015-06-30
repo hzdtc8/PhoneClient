@@ -69,7 +69,7 @@ import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
 
 
-public class MainActivity extends Activity implements OnItemSelectedListener, GestureListener  {
+public class MainActivity extends Activity implements OnItemSelectedListener  {
 	public Button privateButton,setupButton; 
 	public Socket CommandSocket,receivingSocket,sendingSocket,sendMsgSocket; 
 	public OutputStream outputStream,outputStreamSendSelectAndTagID;//outputStream is belong to command_Socket;
@@ -112,6 +112,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	LinearLayout extendedScreenLayout;
 	LinearLayout loginformLayout;
 	LinearLayout lockStatusLayout;
+	LinearLayout issueCommandlayout;
 	TextView paraTextView;
 	Spinner spinner;
 	String[] pathStrings;
@@ -122,6 +123,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Ge
 	EditText usernameEditText,passwordEditText;
 	Button loginButton;
 	Button growFontButton,shrinkFontButton,redButton,blueButton,yellowButton;
+	TextView gestureNameTextView;
 	drawingtest extendDrawingtest;
 	java.util.List<String> gestureList = new LinkedList<>();
 	Button yesAccessControlButton,noAccessControlButton;
@@ -300,7 +302,8 @@ runOnUiThread(new Runnable() {
 					// TODO Auto-generated method stub
 				    mAinLayout.setVisibility(View.GONE);
 				    loginformLayout.setVisibility(View.GONE);
-				    extendedScreenLayout.setVisibility(View.VISIBLE);
+				    //extendedScreenLayout.setVisibility(View.VISIBLE);
+				    issueCommandlayout.setVisibility(View.VISIBLE);
 				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
 				    lockStatusLayout.setVisibility(View.GONE);
 				    
@@ -322,7 +325,8 @@ runOnUiThread(new Runnable() {
 					
 				    mAinLayout.setVisibility(View.GONE);
 				    loginformLayout.setVisibility(View.VISIBLE);
-				    extendedScreenLayout.setVisibility(View.GONE);
+				   // extendedScreenLayout.setVisibility(View.GONE);
+				    issueCommandlayout.setVisibility(View.GONE);
 				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
 				    
 
@@ -331,7 +335,7 @@ runOnUiThread(new Runnable() {
 		}
 		else if (inMsg[0].startsWith("dropdownList"))
 		{
-			String[] pathStrings ={"My favorite","My address","My hobby"};
+			String[] pathStrings ={"Google","Yahoo","YouTube"};
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,pathStrings);
 		    spinner.setAdapter(adapter);
 
@@ -393,7 +397,9 @@ runOnUiThread(new Runnable() {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-	
+		issueCommandlayout = (LinearLayout)findViewById(R.id.issueCommand);
+		
+		
 		XmlPullParserFactory xFactory;
 		engine= new GestureEngine();
 		opMode=GestureMode.RECOGNISE;
@@ -487,71 +493,77 @@ runOnUiThread(new Runnable() {
 	});
 		
 	
-	personalizeGestureButton = (Button)findViewById(R.id.PersonalizeG);
+	//personalizeGestureButton = (Button)findViewById(R.id.PersonalizeG);
 	loginformLayout = (LinearLayout)findViewById(R.id.loginform);
 	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedSceen);
 	
-	redButton=(Button)findViewById(R.id.Red);
-	redButton.setOnClickListener(new View.OnClickListener() {
-		
+
+	
+	String[] myitemStrings={"Grow Font Size", "Shrink Font Size"};
+	String[] colorStrings ={"Change to red", "Change to blue","Change to yellow"};
+	ArrayAdapter<String> fondAdapter = new ArrayAdapter<String>(this, R.layout.items_listview,myitemStrings);
+	ArrayAdapter<String> fontColorAdapter = new ArrayAdapter<String>(this,R.layout.items_listview,colorStrings);
+	ListView fontListView = (ListView) findViewById(R.id.issueCommandListView);
+	ListView fontColorListView =(ListView)findViewById(R.id.ChangeFontColorListView);
+	fontListView.setAdapter(fondAdapter);
+	fontColorListView.setAdapter(fontColorAdapter);
+	
+	fontColorListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
 		@Override
-		public void onClick(View v) {
+		public void onItemClick(AdapterView<?> arg0, View ViewClick, int position,
+				long arg3) {
 			// TODO Auto-generated method stub
-		MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
-		byte[] arrayByte = msgFormate.getMessageText().getBytes();
-		
-		try {
-			outputStreamSendSelectAndTagID.write(arrayByte);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			
-		}
-	});
-	blueButton=(Button)findViewById(R.id.Blue);
-	blueButton.setOnClickListener(new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","blue" );
-			byte[] arrayByte = msgFormate.getMessageText().getBytes();
-			
-			try {
-				outputStreamSendSelectAndTagID.write(arrayByte);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(position==0)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else if(position==1)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","blue" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else if(position==2)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","yellow" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 		}
 	});
 	
-	yellowButton=(Button)findViewById(R.id.Yellow);
-	yellowButton.setOnClickListener(new View.OnClickListener() {
-		
+	fontListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
 		@Override
-		public void onClick(View v) {
+		public void onItemClick(AdapterView<?> arg0, View ViewClick, int position,
+				long id) {
 			// TODO Auto-generated method stub
-			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","yellow" );
-			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
-			try {
-				outputStreamSendSelectAndTagID.write(arrayByte);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	});
-	
-	growFontButton=(Button)findViewById(R.id.GrowFont);
-	growFontButton.setOnClickListener(new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
+			TextView textView =(TextView)ViewClick;
+			if(position==0)
+			{
 			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","grow" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
 			
@@ -561,26 +573,22 @@ runOnUiThread(new Runnable() {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-	});
-	
-	shrinkFontButton=(Button)findViewById(R.id.ShrinkFont);
-	shrinkFontButton.setOnClickListener(new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","shrink" );
-			byte[] arrayByte = msgFormate.getMessageText().getBytes();
-			
-			try {
-				outputStreamSendSelectAndTagID.write(arrayByte);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			}
+			else if(position==1)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","shrink" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	});
+	
 	
 	
 	passwordEditText =(EditText)findViewById(R.id.Password);
@@ -658,6 +666,7 @@ runOnUiThread(new Runnable() {
 	
 	textViewLayout=(LinearLayout)findViewById(R.id.textViewLayout);
 	drawingtestLayout=(drawingtest)findViewById(R.id.drawingtest1);
+	gestureNameTextView=(TextView)findViewById(R.id.DisplayNameOfGesture);
 	drawingtestLayout.addListener(new GestureListener() {
 		
 		@Override
@@ -673,7 +682,7 @@ runOnUiThread(new Runnable() {
 				GestureMatch match = engine.recognise(g);
 					Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
 		Log.i("match name", "match name: "+match.gesture.name);
-		if(match.gesture.name.equals("hcilab")||match.gesture.name.equals("hcilabgood")&&loginformLayout.getVisibility()==0)
+		if(match.gesture.name.equals("hcilab")&&loginformLayout.getVisibility()==0||match.gesture.name.equals("hcilabgood")&&loginformLayout.getVisibility()==0)
 		{
 			passwordEditText.setText(match.gesture.name);
 			usernameEditText.setText(match.gesture.name);
@@ -681,7 +690,11 @@ runOnUiThread(new Runnable() {
 					
 					Toast.makeText(MainActivity.this,"We find the your input", 100).show();
 		}
-		else if(match.gesture.name.equals("red")&&extendedScreenLayout.getVisibility()==0) {
+		else if(gestureInterfaceLayout.getVisibility()==0&&gestureListInterfaceLayout.getVisibility()==0)
+		{
+		 gestureNameTextView.setText(match.gesture.name);
+		}
+		else if(match.gesture.name.equals("red")&&issueCommandlayout.getVisibility()==0) {
 			
 			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
@@ -693,7 +706,7 @@ runOnUiThread(new Runnable() {
 				e.printStackTrace();
 			}
 		}
-		else if(match.gesture.name.equals("blue")&&extendedScreenLayout.getVisibility()==0)
+		else if(match.gesture.name.equals("blue")&&issueCommandlayout.getVisibility()==0)
 		{
 			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","blue" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
@@ -706,7 +719,7 @@ runOnUiThread(new Runnable() {
 			}
 		
 		}
-		else if(match.gesture.name.equals("grow")&&extendedScreenLayout.getVisibility()==0)
+		else if(match.gesture.name.equals("grow")&&issueCommandlayout.getVisibility()==0)
 		{
 			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","grow" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
@@ -719,7 +732,7 @@ runOnUiThread(new Runnable() {
 			}
 		
 		}
-		else if(match.gesture.name.equals("shrink")&&extendedScreenLayout.getVisibility()==0)
+		else if(match.gesture.name.equals("shrink")&&issueCommandlayout.getVisibility()==0)
 		{
 			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","shrink" );
 			byte[] arrayByte = msgFormate.getMessageText().getBytes();
@@ -827,26 +840,25 @@ runOnUiThread(new Runnable() {
 		}
 	});
 	gestureListInterfaceLayout=(LinearLayout)findViewById(R.id.GestureListInterface);
-	gestureListView=(ListView)findViewById(R.id.GestureListView);
 	
-	ArrayAdapter<String> adapterList=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, gestureList);
-	gestureListView.setAdapter(adapterList);
 	
-	personalizeGestureButton.setOnClickListener(new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			tSpeech.speak("You are in the personalize gesture mode", TextToSpeech.QUEUE_FLUSH, null);
-			vibrator.vibrate(500);
-			mAinLayout.setVisibility(View.GONE);
-			gestureListInterfaceLayout.setVisibility(View.VISIBLE);
-			gestureInterfaceLayout.setVisibility(View.VISIBLE);
-			
-			
-			//new Connection().execute();
-		}
-	});
+
+	
+//	personalizeGestureButton.setOnClickListener(new View.OnClickListener() {
+//		
+//		@Override
+//		public void onClick(View v) {
+//			// TODO Auto-generated method stub
+//			tSpeech.speak("You are in the personalize gesture mode", TextToSpeech.QUEUE_FLUSH, null);
+//			vibrator.vibrate(500);
+//			mAinLayout.setVisibility(View.GONE);
+//			gestureListInterfaceLayout.setVisibility(View.VISIBLE);
+//			gestureInterfaceLayout.setVisibility(View.VISIBLE);
+//			
+//			
+//			//new Connection().execute();
+//		}
+//	});
 	
 		tSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
 	
@@ -1264,22 +1276,22 @@ public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
 	
 	Toast.makeText(this, "You Selected "+textView.getText(), Toast.LENGTH_SHORT).show();
 	
-	if(textView.getText().toString().equals("My hobby"))
+	if(textView.getText().toString().equals("Google"))
 	{
-	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "My hobby: play basketball, listen music, travel");
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "https://www.google.com");
 	System.out.println("Comand="+command.getMessageText());//debug the TagID
 	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
 	}
 	
-	else if(textView.getText().toString().equals("My address"))
+	else if(textView.getText().toString().equals("Yahoo"))
 	{
-	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "My address: CS department,North Dakota State University,Fargo,ND");
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "https://www.yahoo.com");
 	System.out.println("Comand="+command.getMessageText());//debug the TagID
 	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
 	}
-	else if(textView.getText().toString().equals("My favorite"))
+	else if(textView.getText().toString().equals("YouTube"))
 	{
-	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "My favorite: Read books and chatting");
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "https://www.youtube.com");
 	System.out.println("Comand="+command.getMessageText());//debug the TagID
 	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
 	}
@@ -1301,27 +1313,7 @@ public void onNothingSelected(AdapterView<?> arg0) {
 	// TODO Auto-generated method stub
 	
 }
-@Override
-public void handleGesture(Gesture g) {
-	// TODO Auto-generated method stub
-	GestureMatch match = engine.recognise(g);
-	Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
-	Log.i("match name", "match name: "+match.gesture.name);
-	
-	if (match.gesture.name.equals("red"))
-	{
-		MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
-		byte[] arrayByte = msgFormate.getMessageText().getBytes();
-		
-		try {
-			outputStreamSendSelectAndTagID.write(arrayByte);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-}
+
 	
 
 }
