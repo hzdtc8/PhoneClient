@@ -24,6 +24,8 @@ public class MsgFormate {
 	private static String itemSelect="itemSelect;{0};{1};{2}";//itemSelect;tagID;caption;content/>
 	private static String paragraphSelect="paragraphSelect;{0};{1};{2}";//paragraphSelect;tagID;caption;content/>
 	
+	
+	
 	private String messageText;
 	private MsgType messageType;
 	

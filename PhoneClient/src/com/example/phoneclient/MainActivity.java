@@ -223,12 +223,14 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 		Context context;
 		int[] iamges;
 		String[] fontSize;
+		String[] descriptionStrings;
 
-		public myAdapter(Context context,String[] fontSize, int images[]) {
+		public myAdapter(Context context,String[] fontSize,String[] desc ,int images[]) {
 			super(context,R.layout.row,R.id.rowTextView,fontSize);
 			this.context=context;
 			this.fontSize=fontSize;
 			this.iamges=images;
+			this.descriptionStrings=desc;
 			// TODO Auto-generated constructor stub
 		}
 		
@@ -239,10 +241,12 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 			View rowView=inflater.inflate(R.layout.row,parent, false);
 			ImageView imageView =(ImageView)rowView.findViewById(R.id.imageView1);
 			TextView myFontsizeTextView=(TextView)rowView.findViewById(R.id.rowTextView);
+			TextView myFontDescTextView=(TextView)rowView.findViewById(R.id.textView2);
 			
 			imageView.setImageResource(iamges[position]);
 			myFontsizeTextView.setText(fontSize[position]);
-			//ddwd
+			myFontDescTextView.setText(descriptionStrings[position]);
+			
 			return rowView;
 		}
 		
@@ -543,8 +547,10 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 	Resources resource = getResources();
 	fontsize=resource.getStringArray(R.array.fontSize);
 	fontColor=resource.getStringArray(R.array.fontColor);
-	myAdapter mydaAdapter= new myAdapter(this, fontsize, images);
-	myAdapter mycoloraAdapter= new myAdapter(this, fontColor, colorImages);
+	String[] fontDescription =resource.getStringArray(R.array.fontSizeDescription);
+	String[] fontColorDescription=resource.getStringArray(R.array.fontColorDescription);
+	myAdapter mydaAdapter= new myAdapter(this, fontsize, fontDescription,images);
+	myAdapter mycoloraAdapter= new myAdapter(this, fontColor,fontColorDescription ,colorImages);
 	
 	ListView fontListView = (ListView) findViewById(R.id.issueCommandListView);
 	ListView fontColorListView =(ListView)findViewById(R.id.ChangeFontColorListView);
