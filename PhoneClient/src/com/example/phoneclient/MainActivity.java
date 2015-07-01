@@ -234,7 +234,14 @@ runOnUiThread(new Runnable() {
 				    builder.setMessage(messageString)
 			.setPositiveButton("okay",  new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    // FIRE ZE MISSILES!
+                	
+                    if(warningAccessControlTextView.getVisibility()==0)
+                    {
+                    	warningAccessControlTextView.setVisibility(View.GONE);
+                    	mAinLayout.setVisibility(View.VISIBLE);
+                    	
+                    }
+                  
                 }
             });
             
