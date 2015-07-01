@@ -1,6 +1,7 @@
 package com.example.phoneclient;
 
 import java.awt.List;
+import java.awt.Robot;
 import java.io.DataOutputStream;
 
 import android.opengl.Visibility;
@@ -14,6 +15,8 @@ import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.util.LinkedList;
 import java.util.Locale;
+
+import javax.annotation.Resource;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,12 +32,14 @@ import com.michaelmarner.gestures.HandleXml;
 import com.michaelmarner.gestures.drawingtest;
 
 import android.R.color;
+import android.R.integer;
 import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -129,6 +134,10 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 	Button yesAccessControlButton,noAccessControlButton;
 	TextView warningAccessControlTextView;
 	String currentLockStatuString="lock";
+	String[] fontsize;
+	String[] fontColor;
+	int[] images ={R.drawable.growd,R.drawable.shirnk1};
+	int[] colorImages = {R.drawable.red,R.drawable.blue,R.drawable.yellow};
 	
 	LinearLayout gestureListInterfaceLayout;
 	ListView gestureListView;
@@ -209,6 +218,36 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 		}
 		return hello;
 	}
+	class myAdapter extends ArrayAdapter<String>
+	{
+		Context context;
+		int[] iamges;
+		String[] fontSize;
+
+		public myAdapter(Context context,String[] fontSize, int images[]) {
+			super(context,R.layout.row,R.id.rowTextView,fontSize);
+			this.context=context;
+			this.fontSize=fontSize;
+			this.iamges=images;
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View rowView=inflater.inflate(R.layout.row,parent, false);
+			ImageView imageView =(ImageView)rowView.findViewById(R.id.imageView1);
+			TextView myFontsizeTextView=(TextView)rowView.findViewById(R.id.rowTextView);
+			
+			imageView.setImageResource(iamges[position]);
+			myFontsizeTextView.setText(fontSize[position]);
+			
+			return rowView;
+		}
+		
+	}
+	
 	
 	public void TranslateMessage(String Msg)
 	{
@@ -225,7 +264,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 			final String messageString = inMsg[3];
 			
 			
-runOnUiThread(new Runnable() {
+			runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
@@ -237,7 +276,7 @@ runOnUiThread(new Runnable() {
                 	
                     if(warningAccessControlTextView.getVisibility()==0)
                     {
-                    	warningAccessControlTextView.setVisibility(View.GONE);
+                    	lockStatusLayout.setVisibility(View.GONE);
                     	mAinLayout.setVisibility(View.VISIBLE);
                     	
                     }
@@ -280,8 +319,7 @@ runOnUiThread(new Runnable() {
 		else if(inMsg[0].startsWith("image")) {
 			
 			currentLockStatuString=inMsg[2];
-			
-			
+
 			runOnUiThread(new Runnable() {
 				
 				@Override
@@ -294,15 +332,11 @@ runOnUiThread(new Runnable() {
 				}
 			});			
 			
-			
-			
-			 
-
 		}
 		
 		else if (inMsg[0].startsWith("surfaceTextbox"))
 		{
-runOnUiThread(new Runnable() {
+			runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
@@ -324,7 +358,7 @@ runOnUiThread(new Runnable() {
 		}
 		else if (inMsg[0].startsWith("editText"))
 		{
-runOnUiThread(new Runnable() {
+			runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
@@ -405,6 +439,8 @@ runOnUiThread(new Runnable() {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		issueCommandlayout = (LinearLayout)findViewById(R.id.issueCommand);
+		
+
 		
 		
 		XmlPullParserFactory xFactory;
@@ -504,16 +540,17 @@ runOnUiThread(new Runnable() {
 	loginformLayout = (LinearLayout)findViewById(R.id.loginform);
 	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedSceen);
 	
-
+	Resources resource = getResources();
+	fontsize=resource.getStringArray(R.array.fontSize);
+	fontColor=resource.getStringArray(R.array.fontColor);
+	myAdapter mydaAdapter= new myAdapter(this, fontsize, images);
+	myAdapter mycoloraAdapter= new myAdapter(this, fontColor, colorImages);
 	
-	String[] myitemStrings={"Grow Font Size", "Shrink Font Size"};
-	String[] colorStrings ={"Change to red", "Change to blue","Change to yellow"};
-	ArrayAdapter<String> fondAdapter = new ArrayAdapter<String>(this, R.layout.items_listview,myitemStrings);
-	ArrayAdapter<String> fontColorAdapter = new ArrayAdapter<String>(this,R.layout.items_listview,colorStrings);
 	ListView fontListView = (ListView) findViewById(R.id.issueCommandListView);
 	ListView fontColorListView =(ListView)findViewById(R.id.ChangeFontColorListView);
-	fontListView.setAdapter(fondAdapter);
-	fontColorListView.setAdapter(fontColorAdapter);
+	fontListView.setAdapter(mydaAdapter);
+	fontColorListView.setAdapter(mycoloraAdapter);
+
 	
 	fontColorListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -568,7 +605,7 @@ runOnUiThread(new Runnable() {
 				long id) {
 			// TODO Auto-generated method stub
 			
-			TextView textView =(TextView)ViewClick;
+			
 			if(position==0)
 			{
 			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","grow" );
@@ -753,12 +790,7 @@ runOnUiThread(new Runnable() {
 		
 		}
 		
-		
-		
-		
-		
-		
-				
+			
 			} catch (Exception e) {
 				e.printStackTrace();// TODO: handle exception
 			}break;
@@ -848,24 +880,6 @@ runOnUiThread(new Runnable() {
 	});
 	gestureListInterfaceLayout=(LinearLayout)findViewById(R.id.GestureListInterface);
 	
-	
-
-	
-//	personalizeGestureButton.setOnClickListener(new View.OnClickListener() {
-//		
-//		@Override
-//		public void onClick(View v) {
-//			// TODO Auto-generated method stub
-//			tSpeech.speak("You are in the personalize gesture mode", TextToSpeech.QUEUE_FLUSH, null);
-//			vibrator.vibrate(500);
-//			mAinLayout.setVisibility(View.GONE);
-//			gestureListInterfaceLayout.setVisibility(View.VISIBLE);
-//			gestureInterfaceLayout.setVisibility(View.VISIBLE);
-//			
-//			
-//			//new Connection().execute();
-//		}
-//	});
 	
 		tSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
 	
@@ -1248,30 +1262,7 @@ public String[] trim(String msg)
 	}
 
 
-//public void handleGesture(Gesture g) {
-//	// TODO Auto-generated method stub
-//	Log.i("handleGesture", "Point: "+g.getPoints().toString());
-//	try {	
-//		
-//		Log.i("match name", "recognise starts");
-//		GestureMatch match = engine.recognise(g);
-//			Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
-//Log.i("match name", "match name: "+match.gesture.name);
-//
-//	passwordEditText.setText(match.gesture.name);
-//	usernameEditText.setText(match.gesture.name);
-//	
-//			
-//			Toast.makeText(MainActivity.this,"We find the your input", 100).show();
-//			
-//		
-//	} catch (Exception e) {
-//		e.printStackTrace();// TODO: handle exception
-//	}
-//	
-//
-//	
-//}
+
 
 public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 	// TODO Auto-generated method stub
