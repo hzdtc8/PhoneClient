@@ -242,7 +242,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 			
 			imageView.setImageResource(iamges[position]);
 			myFontsizeTextView.setText(fontSize[position]);
-			
+			//ddwd
 			return rowView;
 		}
 		
