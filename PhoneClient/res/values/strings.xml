@@ -4,5 +4,26 @@
     <string name="app_name">PhoneClient</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+	<string-array name="fontSize">
+	    <item>Grow Font</item>
+	    <item>Shrink Font</item>
+	</string-array>
+	
+	<string-array name="fontColor">
+	    <item>Red</item>
+	    <item>Blue</item>
+	    <item>Yellow</item>
+	</string-array>
+	
+	<string-array name="fontSizeDescription">
+	    <item>Increase the font size</item>
+	    <item>Decrease the font size</item>
+	</string-array>
+	
+	<string-array name="fontColorDescription">
+	    <item> Change to Red</item>
+	    <item> Change to Blue</item>
+	    <item> Change to Yellow</item>
+	</string-array>
+	    
 </resources>
