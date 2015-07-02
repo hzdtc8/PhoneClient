@@ -23,6 +23,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -82,6 +84,7 @@ public class MainActivity extends Activity implements GestureListener  {
 	LinearLayout mAinLayout;
 	LinearLayout textViewLayout;
 	LinearLayout gestureInterfaceLayout;
+	Bitmap newBitmap,newFinalBitmap,newDeal;
 	
 	
 	public void sendmessage()
@@ -424,8 +427,9 @@ receiveImageThread = new Thread (new Runnable() {
 			bitmap = BitmapFactory.decodeByteArray(data1, 0, data1.length);
 			// scale the bitmap fit the screen
 			bMap = Bitmap.createScaledBitmap(bitmap, 1920, 1100, true);
+		newBitmap =BitmapFactory.decodeResource(getResources(), R.drawable.moble_picture);
+		newFinalBitmap = Bitmap.createScaledBitmap(newBitmap, 1920, 1100, true);
 		
-			
 		}
 		
 	}
@@ -531,10 +535,12 @@ receiveThread = new Thread(new Runnable() {
 
 								bMapScaled = Bitmap.createBitmap(bMap,
 										temx, temy, 170,130);// scale the bMap which is from 8080
+								newDeal=Bitmap.createBitmap(newFinalBitmap,
+										temx, temy, 170,130);
 								
-								image.setImageBitmap(bMapScaled);
+								//image.setImageBitmap(bMapScaled);
 
-
+								image.setImageBitmap(newDeal);
 								
 							}
 						});
