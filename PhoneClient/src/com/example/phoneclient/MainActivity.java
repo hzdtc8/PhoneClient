@@ -136,6 +136,9 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 	String currentLockStatuString="lock";
 	String[] fontsize;
 	String[] fontColor;
+	String[] fontDescriptionStrings;
+	String[] fontColorDescriptionStrings;
+	
 	int[] images ={R.drawable.growd,R.drawable.shirnk1};
 	int[] colorImages = {R.drawable.red,R.drawable.blue,R.drawable.yellow};
 	
@@ -543,6 +546,8 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 	Resources resource = getResources();
 	fontsize=resource.getStringArray(R.array.fontSize);
 	fontColor=resource.getStringArray(R.array.fontColor);
+	fontDescriptionStrings=resource.getStringArray(R.array.fontSizeDescription);
+	
 	myAdapter mydaAdapter= new myAdapter(this, fontsize, images);
 	myAdapter mycoloraAdapter= new myAdapter(this, fontColor, colorImages);
 	
