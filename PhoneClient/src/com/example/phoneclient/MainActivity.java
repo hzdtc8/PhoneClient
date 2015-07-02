@@ -226,6 +226,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 		Context context;
 		int[] iamges;
 		String[] fontSize;
+		
 
 		public myAdapter(Context context,String[] fontSize, int images[]) {
 			super(context,R.layout.row,R.id.rowTextView,fontSize);
@@ -547,7 +548,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 	fontsize=resource.getStringArray(R.array.fontSize);
 	fontColor=resource.getStringArray(R.array.fontColor);
 	fontDescriptionStrings=resource.getStringArray(R.array.fontSizeDescription);
-	
+	fontColorDescriptionStrings = resource.getStringArray(R.array.fontColorDescription);
 	myAdapter mydaAdapter= new myAdapter(this, fontsize, images);
 	myAdapter mycoloraAdapter= new myAdapter(this, fontColor, colorImages);
 	
