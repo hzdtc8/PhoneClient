@@ -553,8 +553,8 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 	fontColor=resource.getStringArray(R.array.fontColor);
 	fontDescriptionStrings=resource.getStringArray(R.array.fontSizeDescription);
 	fontColorDescriptionStrings = resource.getStringArray(R.array.fontColorDescription);
-	myAdapter mydaAdapter= new myAdapter(this, fontsize, images);
-	myAdapter mycoloraAdapter= new myAdapter(this, fontColor, colorImages);
+	myAdapter mydaAdapter= new myAdapter(this, fontsize,fontDescriptionStrings, images);
+	myAdapter mycoloraAdapter= new myAdapter(this, fontColor, fontColorDescriptionStrings,colorImages);
 	
 	ListView fontListView = (ListView) findViewById(R.id.issueCommandListView);
 	ListView fontColorListView =(ListView)findViewById(R.id.ChangeFontColorListView);
