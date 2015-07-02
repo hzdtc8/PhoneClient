@@ -226,13 +226,15 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 		Context context;
 		int[] iamges;
 		String[] fontSize;
+		String[] fontDescriptionStrings;
 		
 
-		public myAdapter(Context context,String[] fontSize, int images[]) {
+		public myAdapter(Context context,String[] fontSize, String[] fontdescriptionStrings,int images[]) {
 			super(context,R.layout.row,R.id.rowTextView,fontSize);
 			this.context=context;
 			this.fontSize=fontSize;
 			this.iamges=images;
+			this.fontDescriptionStrings=fontdescriptionStrings;
 			// TODO Auto-generated constructor stub
 		}
 		
@@ -243,9 +245,11 @@ public class MainActivity extends Activity implements OnItemSelectedListener  {
 			View rowView=inflater.inflate(R.layout.row,parent, false);
 			ImageView imageView =(ImageView)rowView.findViewById(R.id.imageView1);
 			TextView myFontsizeTextView=(TextView)rowView.findViewById(R.id.rowTextView);
+			TextView myfontdescriptionTextView =(TextView)rowView.findViewById(R.id.textView2);
 			
 			imageView.setImageResource(iamges[position]);
 			myFontsizeTextView.setText(fontSize[position]);
+			myfontdescriptionTextView.setText(fontDescriptionStrings[position]);
 			
 			return rowView;
 		}
