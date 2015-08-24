@@ -1,7 +1,10 @@
 package com.example.phoneclient;
 
+import java.awt.List;
+import java.awt.Robot;
 import java.io.DataOutputStream;
 
+import android.opengl.Visibility;
 import android.os.Vibrator;
 
 import java.io.IOException;
@@ -10,25 +13,43 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
+import java.util.LinkedList;
 import java.util.Locale;
 
+import javax.annotation.Resource;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+
 import com.michaelmarner.gestures.Gesture;
+import com.michaelmarner.gestures.GestureEngine;
 import com.michaelmarner.gestures.GestureListener;
+import com.michaelmarner.gestures.GestureMatch;
+import com.michaelmarner.gestures.GestureMode;
+import com.michaelmarner.gestures.HandleXml;
 import com.michaelmarner.gestures.drawingtest;
 
 import android.R.color;
+import android.R.integer;
 import android.R.string;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.GpsStatus.Listener;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.speech.tts.TextToSpeech;
+import android.text.AndroidCharacter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,16 +57,24 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Build;
 
+import com.memetix.mst.language.Language;
+import com.memetix.mst.translate.Translate;
 
-public class MainActivity extends Activity implements GestureListener  {
+
+public class MainActivity extends Activity implements OnItemSelectedListener  {
 	public Button privateButton,setupButton; 
 	public Socket CommandSocket,receivingSocket,sendingSocket,sendMsgSocket; 
 	public OutputStream outputStream,outputStreamSendSelectAndTagID;//outputStream is belong to command_Socket;
@@ -77,14 +106,45 @@ public class MainActivity extends Activity implements GestureListener  {
 	ImageView  image;
 	Vibrator vibrator;
 	TextToSpeech tSpeech;
-	Button shartButton;
+	Button personalizeGestureButton;
 	Thread receiveImageThread,receiveMsgThread,receiveThread,sendingThread;
 	drawingtest drawingtestLayout;
 	LinearLayout mAinLayout;
 	LinearLayout textViewLayout;
 	LinearLayout gestureInterfaceLayout;
+	LinearLayout dropdownlistLayout;
+	LinearLayout paragraphSelectLayout;
+	LinearLayout extendedScreenLayout;
+	LinearLayout loginformLayout;
+	LinearLayout lockStatusLayout;
+	LinearLayout issueCommandlayout;
+	TextView paraTextView;
+	Spinner spinner;
+	String[] pathStrings;
+	Button chineseButton,spanishButton,germanButton;
+	String textviewTextChinese,textviewTextSpanish,textviewTextGerman;
+	Button goToMainScreenButtonInTranslationView,goToMainScreenInDropDownList,goToMainScreenButtonInExtendedScreen,goToMainScreenInAccessControl;
+	int iCurrentSelect;
+	EditText usernameEditText,passwordEditText;
+	Button loginButton;
+	Button growFontButton,shrinkFontButton,redButton,blueButton,yellowButton;
+	TextView gestureNameTextView;
+	drawingtest extendDrawingtest;
+	java.util.List<String> gestureList = new LinkedList<>();
+	Button yesAccessControlButton,noAccessControlButton;
+	TextView warningAccessControlTextView;
+	String currentLockStatuString="lock";
+	String[] fontsize;
+	String[] fontColor;
+	int[] images ={R.drawable.growd,R.drawable.shirnk1};
+	int[] colorImages = {R.drawable.red,R.drawable.blue,R.drawable.yellow};
 	
+	LinearLayout gestureListInterfaceLayout;
+	ListView gestureListView;
 	
+	GestureEngine engine;
+	GestureMode opMode;
+	//hello this is test
 	public void sendmessage()
 	{
 		Intent intent = new Intent(this, DisplayMessageActivity.class);
@@ -110,6 +170,88 @@ public class MainActivity extends Activity implements GestureListener  {
 	    else //invalid message
 	    	return;
 	}
+	public String translate(String content,String language)
+	{
+		String hello = null;
+
+		Translate.setClientId("PhoneClient");
+		Translate.setClientSecret("zheng.huang@ndsu.edu");
+		if(language.equals("French"))
+		{
+			try {
+			hello = Translate.execute(content, Language.FRENCH);
+			//System.out.println(hello);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		else if (language.equals("Chinese"))
+		{
+			try {
+				hello = Translate.execute(content, Language.CHINESE_SIMPLIFIED);
+				//System.out.println(hello);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (language.equals("Spanish"))
+		{
+			try {
+				hello = Translate.execute(content, Language.SPANISH);
+				//System.out.println(hello);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (language.equals("German"))
+		{
+			try {
+				hello = Translate.execute(content, Language.GERMAN);
+				//System.out.println(hello);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return hello;
+	}
+	class myAdapter extends ArrayAdapter<String>
+	{
+		Context context;
+		int[] iamges;
+		String[] fontSize;
+		String[] descriptionStrings;
+
+		public myAdapter(Context context,String[] fontSize,String[] desc ,int images[]) {
+			super(context,R.layout.row,R.id.rowTextView,fontSize);
+			this.context=context;
+			this.fontSize=fontSize;
+			this.iamges=images;
+			this.descriptionStrings=desc;
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View rowView=inflater.inflate(R.layout.row,parent, false);
+			ImageView imageView =(ImageView)rowView.findViewById(R.id.imageView1);
+			TextView myFontsizeTextView=(TextView)rowView.findViewById(R.id.rowTextView);
+			TextView myFontDescTextView=(TextView)rowView.findViewById(R.id.textView2);
+			
+			imageView.setImageResource(iamges[position]);
+			myFontsizeTextView.setText(fontSize[position]);
+			myFontDescTextView.setText(descriptionStrings[position]);
+			
+			return rowView;
+		}
+		
+	}
+	
 	
 	public void TranslateMessage(String Msg)
 	{
@@ -119,8 +261,46 @@ public class MainActivity extends Activity implements GestureListener  {
 		if(inMsg[0].startsWith("speech"))
 		{
 			speakOut(inMsg[3]);
+			
 		}
-		else if (inMsg[0].startsWith("vibrator"))
+		else if (inMsg[0].startsWith("dialog")) {
+			final AlertDialog.Builder builder=new AlertDialog.Builder(this);
+			final String messageString = inMsg[3];
+			
+			
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+				    builder.setMessage(messageString)
+			.setPositiveButton("okay",  new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                	
+                    if(warningAccessControlTextView.getVisibility()==0)
+                    {
+                    	lockStatusLayout.setVisibility(View.GONE);
+                    	mAinLayout.setVisibility(View.VISIBLE);
+                    	
+                    }
+                  
+                }
+            });
+            
+			builder.setTitle("warning");
+			
+			AlertDialog dialog=builder.create();
+			dialog.show();
+				    
+
+				}
+			});
+			
+			
+			
+		}
+		else if (inMsg[0].startsWith("vibrate"))
 		{
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         	v.vibrate(200);
@@ -132,20 +312,115 @@ public class MainActivity extends Activity implements GestureListener  {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					
-				    mAinLayout.setVisibility(View.GONE);
-				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
+					gestureInterfaceLayout.setVisibility(View.GONE);;
+				    mAinLayout.setVisibility(View.VISIBLE);
 				    
-					
+				    
+
+				}
+			});
+		}
+		else if(inMsg[0].startsWith("image")) {
+			
+			currentLockStatuString=inMsg[2];
+
+			runOnUiThread(new Runnable() {
 				
-					 
-		    System.out.println("get the visbility: "+drawingtestLayout.getVisibility());
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+				    mAinLayout.setVisibility(View.GONE);
+				    lockStatusLayout.setVisibility(View.VISIBLE);
+
+				}
+			});			
+			
+		}
+		
+		else if (inMsg[0].startsWith("surfaceTextbox"))
+		{
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+				    mAinLayout.setVisibility(View.GONE);
+				    loginformLayout.setVisibility(View.GONE);
+				    //extendedScreenLayout.setVisibility(View.VISIBLE);
+				    issueCommandlayout.setVisibility(View.VISIBLE);
+				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
+				    lockStatusLayout.setVisibility(View.GONE);
+				    
+
 				}
 			});
 		}
 		else if (inMsg[0].startsWith("failure"))
 		{
 			//
+		}
+		else if (inMsg[0].startsWith("editText"))
+		{
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					
+				    mAinLayout.setVisibility(View.GONE);
+				    loginformLayout.setVisibility(View.VISIBLE);
+				   // extendedScreenLayout.setVisibility(View.GONE);
+				    issueCommandlayout.setVisibility(View.GONE);
+				    gestureInterfaceLayout.setVisibility(View.VISIBLE);
+				    
+
+				}
+			});
+		}
+		else if (inMsg[0].startsWith("dropdownList"))
+		{
+			String[] pathStrings ={"Google","Yahoo","YouTube"};
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,pathStrings);
+		    spinner.setAdapter(adapter);
+
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+					mAinLayout.setVisibility(View.GONE);
+					dropdownlistLayout.setVisibility(View.VISIBLE);
+
+				}
+			});
+			
+			//onitemSelected
+		}
+		else if(inMsg[0].startsWith("textbox"))
+		{
+			final String text =inMsg[3];
+			//translate(inMsg[3]);
+			textviewTextChinese=translate(inMsg[3],"Chinese");
+			textviewTextGerman=translate(inMsg[3], "German");
+			textviewTextSpanish=translate(inMsg[3], "Spanish");
+		
+
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+					mAinLayout.setVisibility(View.GONE);
+					paraTextView.setText(text);
+					paraTextView.setTextSize(16);
+					
+					paragraphSelectLayout.setVisibility(View.VISIBLE);
+
+				}
+			});
 		}
 
 		
@@ -157,6 +432,7 @@ public class MainActivity extends Activity implements GestureListener  {
         //else it reads out the text you typed
        if (txt.length() > 0) {
            tSpeech.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
+			
        }
 
    }
@@ -166,19 +442,421 @@ public class MainActivity extends Activity implements GestureListener  {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		issueCommandlayout = (LinearLayout)findViewById(R.id.issueCommand);
 		
+
+		
+		
+		XmlPullParserFactory xFactory;
+		engine= new GestureEngine();
+		opMode=GestureMode.RECOGNISE;
+		String[] flists = null;
+		
+		//get the asset file named gesture
+	 try {
+		flists = this.getAssets().list("gesture");
+		for(String a:flists)
+		{Log.i("lalalala",a);
+		}
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	} 
+	 //each item of list parse into engine
+	 for(String a:flists)
+		{
+		 try {
+			xFactory = XmlPullParserFactory.newInstance();
+			Log.i("Assets.demo", "xfactory create.");
+			XmlPullParser xParser = xFactory.newPullParser();
+			Log.i("Assets.demo", "xParser create");
+			InputStream in_s= getApplicationContext().getAssets().open("gesture/"+a);
+			Log.i("Assets.demo", "inputsream create");
+			xParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+			Log.i("Assets.demo", "setFeture");
+			xParser.setInput(in_s, null);
+			Log.i("Assets.demo", "setInput");
+			HandleXml handleXml = new HandleXml();
+			Log.i("Assets.demo", "create handleXml");
+			handleXml.parseXMLAndStoreIt(xParser);
+			Log.i("Assets.demo", "parse starting");
+			engine.addGesture(handleXml.getGesture());
+			//put all the gesture into Gesture engine 
+			gestureList.add(handleXml.getGesture().name);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 	vibrator = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
-	shartButton = (Button)findViewById(R.id.Share_MOde);
+	
+	yesAccessControlButton=(Button)findViewById(R.id.Yes);
+	noAccessControlButton =(Button)findViewById(R.id.No);
+	warningAccessControlTextView =(TextView)findViewById(R.id.Warning);
+	if (currentLockStatuString=="lock")
+	{
+		 warningAccessControlTextView.setText("Do you want to lock the textbox");
+	}
+	else {
+		warningAccessControlTextView.setText("Do you want to unlock the textbox");
+	}
+	lockStatusLayout=(LinearLayout)findViewById(R.id.LockStatus);
+	
+	yesAccessControlButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "accessControl",currentLockStatuString );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(currentLockStatuString=="lock")
+			{runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+
+					warningAccessControlTextView.setText("Do you want to lock the textbox");
+
+
+				}
+			});
+			}
+			else {
+				warningAccessControlTextView.setText("Do you want to unlock the textbox");
+			}
+		}
+	});
+		
+	
+	//personalizeGestureButton = (Button)findViewById(R.id.PersonalizeG);
+	loginformLayout = (LinearLayout)findViewById(R.id.loginform);
+	extendedScreenLayout=(LinearLayout)findViewById(R.id.extendedSceen);
+	
+	Resources resource = getResources();
+	fontsize=resource.getStringArray(R.array.fontSize);
+	fontColor=resource.getStringArray(R.array.fontColor);
+	String[] fontDescription =resource.getStringArray(R.array.fontSizeDescription);
+	String[] fontColorDescription=resource.getStringArray(R.array.fontColorDescription);
+	myAdapter mydaAdapter= new myAdapter(this, fontsize, fontDescription,images);
+	myAdapter mycoloraAdapter= new myAdapter(this, fontColor,fontColorDescription ,colorImages);
+	
+	ListView fontListView = (ListView) findViewById(R.id.issueCommandListView);
+	ListView fontColorListView =(ListView)findViewById(R.id.ChangeFontColorListView);
+	fontListView.setAdapter(mydaAdapter);
+	fontColorListView.setAdapter(mycoloraAdapter);
+
+	
+	fontColorListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View ViewClick, int position,
+				long arg3) {
+			// TODO Auto-generated method stub
+			if(position==0)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else if(position==1)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","blue" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else if(position==2)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","yellow" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	});
+	
+	fontListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View ViewClick, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			
+			
+			if(position==0)
+			{
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","grow" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			}
+			else if(position==1)
+			{
+				MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","shrink" );
+				byte[] arrayByte = msgFormate.getMessageText().getBytes();
+				
+				try {
+					outputStreamSendSelectAndTagID.write(arrayByte);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	});
+	
+	
+	
+	passwordEditText =(EditText)findViewById(R.id.Password);
+	usernameEditText=(EditText)findViewById(R.id.Username);
+	
+
+	
+	
+	loginButton = (Button)findViewById(R.id.Login);
+	loginButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			
+			MsgFormate msg = MsgFormate.newReturnValue(tagID.getText().toString(), "login form", usernameEditText.getText().toString()+";"+passwordEditText.getText().toString());
+			byte[] arrayByte = msg.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	});
+	
+	
+	goToMainScreenButtonInTranslationView =(Button)findViewById(R.id.goToMainScreen);
+	goToMainScreenButtonInTranslationView.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			paragraphSelectLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+
+			
+			
+		}
+	});
+	
+	goToMainScreenInDropDownList =(Button)findViewById(R.id.goToMainScreenInDropDownList);
+	goToMainScreenInDropDownList.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			dropdownlistLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+		}
+	});
+	
+	goToMainScreenButtonInExtendedScreen = (Button)findViewById(R.id.goToMainScreenInExtendedScreen);
+	goToMainScreenButtonInExtendedScreen.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			gestureInterfaceLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+		}
+	});
+	
+	goToMainScreenInAccessControl =(Button)findViewById(R.id.goToMainScreenInAccessControl);
+	goToMainScreenInAccessControl.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			lockStatusLayout.setVisibility(View.GONE);
+			mAinLayout.setVisibility(View.VISIBLE);
+		}
+	});
 	
 	textViewLayout=(LinearLayout)findViewById(R.id.textViewLayout);
 	drawingtestLayout=(drawingtest)findViewById(R.id.drawingtest1);
-	
+	gestureNameTextView=(TextView)findViewById(R.id.DisplayNameOfGesture);
+	drawingtestLayout.addListener(new GestureListener() {
+		
+		@Override
+		public void handleGesture(Gesture g) {
+			// TODO Auto-generated method stub
+			switch(opMode)
+			{ 
+			case RECOGNISE:
+			Log.i("handleGesture", "Point: "+g.getPoints().toString());
+			try {	
+				
+				Log.i("match name", "recognise starts");
+				GestureMatch match = engine.recognise(g);
+					Log.i(" in recognise handleGesture", "Point: "+g.getPoints().toString());	
+		Log.i("match name", "match name: "+match.gesture.name);
+		if(match.gesture.name.equals("hcilab")&&loginformLayout.getVisibility()==0||match.gesture.name.equals("hcilabgood")&&loginformLayout.getVisibility()==0)
+		{
+			passwordEditText.setText(match.gesture.name);
+			usernameEditText.setText(match.gesture.name);
+			
+					
+					Toast.makeText(MainActivity.this,"We find the your input", 100).show();
+		}
+		else if(gestureInterfaceLayout.getVisibility()==0&&gestureListInterfaceLayout.getVisibility()==0)
+		{
+		 gestureNameTextView.setText(match.gesture.name);
+		}
+		else if(match.gesture.name.equals("red")&&issueCommandlayout.getVisibility()==0) {
+			
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","red" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if(match.gesture.name.equals("blue")&&issueCommandlayout.getVisibility()==0)
+		{
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontColor","blue" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		else if(match.gesture.name.equals("grow")&&issueCommandlayout.getVisibility()==0)
+		{
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","grow" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		else if(match.gesture.name.equals("shrink")&&issueCommandlayout.getVisibility()==0)
+		{
+			MsgFormate msgFormate =MsgFormate.newReturnValue(tagID.getText().toString(), "changeFontSize","shrink" );
+			byte[] arrayByte = msgFormate.getMessageText().getBytes();
+			
+			try {
+				outputStreamSendSelectAndTagID.write(arrayByte);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		
+			
+			} catch (Exception e) {
+				e.printStackTrace();// TODO: handle exception
+			}break;
+			case RECORD:
+				
+		}
+			
+		}
+			
+	});
+
 	gestureInterfaceLayout=(LinearLayout)findViewById(R.id.GestureInterface);
 	gestureInterfaceLayout.setVisibility(View.GONE);
 	
+	dropdownlistLayout=(LinearLayout)findViewById(R.id.dropdownLayout);
+	dropdownlistLayout.setVisibility(View.GONE);
+	
+	paragraphSelectLayout=(LinearLayout)findViewById(R.id.ParagraphTranslation);
+	paraTextView=(TextView)findViewById(R.id.paragraphView);
+	chineseButton =(Button)findViewById(R.id.Chinese);
+	spanishButton=(Button)findViewById(R.id.Spanish);
+	germanButton=(Button)findViewById(R.id.German);
+
+	chineseButton.setOnClickListener(new View.OnClickListener() {
+		
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+              
+              paraTextView.setText(textviewTextChinese);
+			//paraTextView.setText("我们的目的是丰富的人，我们接触到的生活。通过提供最高性能的金融产品和服务，降低风险，增加资产，我们帮助个人和雇主履行他们的职责，并建立更好的明天。我们的文化是基于诚信和公平交易的坚定不移的信念，对待我们的客户和对方以尊严和尊重......我们采取审慎的风险，共同努力，以确保我们的成功和盈利能力在未来......我们努力不断增强的可访问性，专业性，性能和深度以及我们与客户的长期关系，协商的质量信誉。我们努力加以重视作为一个行业领导者在客户满意度，销售增长，产品性能，财务实力和盈利能力。");
+		}
+	});
+	spanishButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			paraTextView.setText(textviewTextSpanish);
+			//paraTextView.setText("Nuestro propósito es enriquecer las vidas de las personas que tocamos. Al proporcionar mayor rendimiento de productos y servicios que reducen los activos de riesgo y aumentar las financieras, ayudamos a las personas y los empleadores cumplan con sus responsabilidades y construir un mañana mejor. Nuestra cultura se basa en una creencia inquebrantable en la integridad y justas relaciones, tratar a nuestros clientes y con los demás con dignidad y respeto ... Tomamos riesgos prudentes y trabajar juntos para asegurar el éxito y la rentabilidad en el futuro ... Trabajamos duro para mejorar continuamente nuestra reputación para la accesibilidad, la profesionalidad, el rendimiento y la profundidad y la calidad de nuestras relaciones de consulta a largo plazo con los clientes ... Nos esforzamos en ser valorado como una empresa líder en la satisfacción del cliente, el crecimiento de las ventas, el rendimiento del producto, la solidez financiera y rentabilidad.");
+		}
+	});
+	germanButton.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			paraTextView.setText(textviewTextGerman);
+			//paraTextView.setText("Unser Ziel ist es, das Leben von Menschen, die wir berühren, zu bereichern. Durch die Bereitstellung von leistungsstärksten Finanzprodukte und Dienstleistungen, die Risiken und Steigerung Vermögen zu reduzieren, helfen wir Einzelpersonen und Arbeitgeber ihrer Verantwortung nachkommen und bauen besser morgen. Unsere Kultur basiert auf einem unerschütterlichen Glauben an die Integrität und fairen Umgang basiert, die Behandlung unserer Kunden und einander mit Würde und Respekt ... Wir nehmen umsichtige Risiken und zusammenarbeiten, um den Erfolg und die Rentabilität in der Zukunft zu gewährleisten ... Wir arbeiten hart daran, verbessern kontinuierlich unsere Reputation für die Barrierefreiheit, Professionalität, Leistung und die Tiefe und Qualität unserer langfristigen beratende Beziehungen zu Kunden ... Wir bemühen uns als Branchenführer in der Kundenzufriedenheit, Umsatzwachstum, Produktleistung, Finanzkraft und bewerten Rentabilität.");
+		}
+	});
+	
+	spinner=(Spinner)findViewById(R.id.mySpinner);
+	spinner.setOnItemSelectedListener(this);
+	
+
 	mAinLayout=(LinearLayout)findViewById(R.id.MainLinear);
 	//drawingtestLayout.setVisibility(View.GONE);
-	drawingtestLayout.addListener(this);
+	
 	setupButton = (Button)findViewById(R.id.Setup_Mode);// setup button is used to setup  command connection with the server
 	setupButton.setOnClickListener(new View.OnClickListener() {
 		
@@ -206,17 +884,9 @@ public class MainActivity extends Activity implements GestureListener  {
 			}
 		}
 	});
+	gestureListInterfaceLayout=(LinearLayout)findViewById(R.id.GestureListInterface);
 	
-	shartButton.setOnClickListener(new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			tSpeech.speak("server is connected", TextToSpeech.QUEUE_FLUSH, null);
-			vibrator.vibrate(500);
-			//new Connection().execute();
-		}
-	});
+	
 		tSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
 	
 	@Override
@@ -240,47 +910,31 @@ bitmapView.setOnTouchListener(new View.OnTouchListener() {
 		
 		if (event.getAction()== event.ACTION_DOWN)
 		{
-		MsgFormate msg = MsgFormate.newObjectClick(tagID.getText().toString(), "objectClick", Float.toString(event.getX())+" "+Float.toString(event.getY()));
-System.out.println("objectclick msg="+msg.getMessageText());
-		bytes=msg.getMessageText().getBytes();
+					MsgFormate msg = MsgFormate.newObjectClick(
+							tagID.getText().toString(),
+							"objectClick",
+							Float.toString(event.getX()) + " "
+									+ Float.toString(event.getY()));
+					System.out.println("objectclick msg="
+							+ msg.getMessageText());
+					bytes = msg.getMessageText().getBytes();
 
 		//vibrator.vibrate(1000);
 
-try {
-	outputStreamSendSelectAndTagID.write(bytes);// tell the server object is select
-} catch (IOException e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
-}
+					try {
+						outputStreamSendSelectAndTagID.write(bytes);// tell the
+																	// server
+																	// object is
+																	// select
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
-		
-		}
-		return false;
-	}
-});
-// use OnlongClickListener to sent if it is select
-//image.setOnLongClickListener(new View.OnLongClickListener() {
-//	
-//	@Override
-//	public boolean onLongClick(View v) {
-//		// TODO Auto-generated method stub
-//		Context context = getApplicationContext();
-//		CharSequence text = "object selected";
-//		int duration = Toast.LENGTH_SHORT;
-//		String objectSelect= "true";
-//		byte[] bytes = objectSelect.getBytes();
-//		vibrator.vibrate(500);
-//		try {
-//			outputStreamSendSelectAndTagID.write(bytes);// tell the server object is select
-//			Toast toast = Toast.makeText(context, text, duration);
-//			toast.show();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return false;
-//	}
-//});
+				}
+				return false;
+			}
+		});
 
 
 
@@ -307,14 +961,6 @@ privateButton.setOnClickListener(new View.OnClickListener() {
 	receiveThread.start();
 	sendingThread.start();
 	
-
-	
-//	try {
-//		outputStreamSendSelectAndTagID.write(arrayByte);// using sendingsocket to sent the TagID to the server
-//	} catch (IOException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
 
 	
 	}
@@ -621,11 +1267,57 @@ public String[] trim(String msg)
 
 	}
 
+
+
+
+public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	// TODO Auto-generated method stub
+	byte[] arrayByte=null;
+	if(iCurrentSelect!=arg2)
+	{
+	TextView textView =(TextView)arg1;
+	
+	
+	Toast.makeText(this, "You Selected "+textView.getText(), Toast.LENGTH_SHORT).show();
+	
+	if(textView.getText().toString().equals("Google"))
+	{
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "https://www.google.com");
+	System.out.println("Comand="+command.getMessageText());//debug the TagID
+	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	}
+	
+	else if(textView.getText().toString().equals("Yahoo"))
+	{
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "https://www.yahoo.com");
+	System.out.println("Comand="+command.getMessageText());//debug the TagID
+	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	}
+	else if(textView.getText().toString().equals("YouTube"))
+	{
+	MsgFormate command = MsgFormate.newItemSelect(tagID.getText().toString(), textView.getText().toString(), "https://www.youtube.com");
+	System.out.println("Comand="+command.getMessageText());//debug the TagID
+	arrayByte = command.getMessageText().getBytes();// convert the TagID into array byte
+	}
+	
+	iCurrentSelect=arg2;
+	try {
+		outputStreamSendSelectAndTagID.write(arrayByte);
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		
+		e.printStackTrace();
+	}
+	}
+	
+}
 @Override
-public void handleGesture(Gesture g) {
+public void onNothingSelected(AdapterView<?> arg0) {
 	// TODO Auto-generated method stub
 	
 }
+
 	
 
 }
